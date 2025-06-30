@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		0A2C4E422C428F5E007794CC /* Defaults in Frameworks */ = {isa = PBXBuildFile; productRef = 0A2C4E412C428F5E007794CC /* Defaults */; };
-		0A4D35852AF541D900846890 /* OllamacApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4D35842AF541D900846890 /* OllamacApp.swift */; };
+		0A4D35852AF541D900846890 /* SlackerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4D35842AF541D900846890 /* SlackerApp.swift */; };
 		0A4D358B2AF541DA00846890 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0A4D358A2AF541DA00846890 /* Assets.xcassets */; };
 		0A4D358E2AF541DA00846890 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0A4D358D2AF541DA00846890 /* Preview Assets.xcassets */; };
 		0A4D35992AF5425900846890 /* AppView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4D35982AF5425900846890 /* AppView.swift */; };
@@ -40,7 +40,7 @@
 		0ADB95ED2C5D42E200EB0C60 /* UserMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ADB95EC2C5D42E200EB0C60 /* UserMessageView.swift */; };
 		0ADB95EF2C5D42FF00EB0C60 /* AssistantMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ADB95EE2C5D42FF00EB0C60 /* AssistantMessageView.swift */; };
 		0ADB960E2C5D57D500EB0C60 /* MarkdownUI in Frameworks */ = {isa = PBXBuildFile; productRef = 0ADB960D2C5D57D500EB0C60 /* MarkdownUI */; };
-		0ADB96112C5D585500EB0C60 /* Theme+Ollamac.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ADB96102C5D585500EB0C60 /* Theme+Ollamac.swift */; };
+		0ADB96112C5D585500EB0C60 /* Theme+Slacker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ADB96102C5D585500EB0C60 /* Theme+Slacker.swift */; };
 		0ADB96132C5D5CC400EB0C60 /* CodeHighlighter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ADB96122C5D5CC400EB0C60 /* CodeHighlighter.swift */; };
 		0ADB96162C5D5DE700EB0C60 /* Color+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ADB96152C5D5DE700EB0C60 /* Color+Hex.swift */; };
 		0AE024832AFB898300347C18 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 0AE024822AFB898300347C18 /* Sparkle */; };
@@ -58,11 +58,11 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		0A4D35812AF541D900846890 /* Ollamac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Ollamac.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		0A4D35842AF541D900846890 /* OllamacApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OllamacApp.swift; sourceTree = "<group>"; };
+		0A4D35812AF541D900846890 /* Slacker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Slacker.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		0A4D35842AF541D900846890 /* SlackerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlackerApp.swift; sourceTree = "<group>"; };
 		0A4D358A2AF541DA00846890 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		0A4D358D2AF541DA00846890 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		0A4D358F2AF541DA00846890 /* Ollamac.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Ollamac.entitlements; sourceTree = "<group>"; };
+		0A4D358F2AF541DA00846890 /* Slacker.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Slacker.entitlements; sourceTree = "<group>"; };
 		0A4D35982AF5425900846890 /* AppView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppView.swift; sourceTree = "<group>"; };
 		0A6E850C2C5E6C670030A4AA /* ChatViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewModel.swift; sourceTree = "<group>"; };
 		0A6E850D2C5E6C670030A4AA /* MessageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageViewModel.swift; sourceTree = "<group>"; };
@@ -86,7 +86,7 @@
 		0ADB95EA2C5D41DF00EB0C60 /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
 		0ADB95EC2C5D42E200EB0C60 /* UserMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserMessageView.swift; sourceTree = "<group>"; };
 		0ADB95EE2C5D42FF00EB0C60 /* AssistantMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssistantMessageView.swift; sourceTree = "<group>"; };
-		0ADB96102C5D585500EB0C60 /* Theme+Ollamac.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Theme+Ollamac.swift"; sourceTree = "<group>"; };
+		0ADB96102C5D585500EB0C60 /* Theme+Slacker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Theme+Slacker.swift"; sourceTree = "<group>"; };
 		0ADB96122C5D5CC400EB0C60 /* CodeHighlighter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodeHighlighter.swift; sourceTree = "<group>"; };
 		0ADB96152C5D5DE700EB0C60 /* Color+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Hex.swift"; sourceTree = "<group>"; };
 		0AE024842AFB8D0E00347C18 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -135,7 +135,7 @@
 		0A4D35822AF541D900846890 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				0A4D35812AF541D900846890 /* Ollamac.app */,
+				0A4D35812AF541D900846890 /* Slacker.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -167,7 +167,7 @@
 		0A4D35952AF5422000846890 /* App */ = {
 			isa = PBXGroup;
 			children = (
-				0A4D35842AF541D900846890 /* OllamacApp.swift */,
+				0A4D35842AF541D900846890 /* SlackerApp.swift */,
 				0AB3629E2C398C3300DE3F31 /* AppUpdater.swift */,
 			);
 			path = App;
@@ -189,7 +189,7 @@
 			children = (
 				0AE024842AFB8D0E00347C18 /* Info.plist */,
 				0A4D358A2AF541DA00846890 /* Assets.xcassets */,
-				0A4D358F2AF541DA00846890 /* Ollamac.entitlements */,
+				0A4D358F2AF541DA00846890 /* Slacker.entitlements */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -289,7 +289,7 @@
 			children = (
 				4A4A8EBD2D5047590065A5EC /* String+ReplaceAndTrim.swift */,
 				0ADB96152C5D5DE700EB0C60 /* Color+Hex.swift */,
-				0ADB96102C5D585500EB0C60 /* Theme+Ollamac.swift */,
+				0ADB96102C5D585500EB0C60 /* Theme+Slacker.swift */,
 				0A6E85172C5E98770030A4AA /* Defaults+Keys.swift */,
 				0A6E85192C5E98770030A4AA /* Optional+Utils.swift */,
 				0A6E851A2C5E98770030A4AA /* String+IsValidURL.swift */,
@@ -310,9 +310,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		0A4D35802AF541D900846890 /* Ollamac */ = {
+		0A4D35802AF541D900846890 /* Slacker */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 0A4D35922AF541DA00846890 /* Build configuration list for PBXNativeTarget "Ollamac" */;
+			buildConfigurationList = 0A4D35922AF541DA00846890 /* Build configuration list for PBXNativeTarget "Slacker" */;
 			buildPhases = (
 				0A4D357D2AF541D900846890 /* Sources */,
 				0A4D357E2AF541D900846890 /* Frameworks */,
@@ -322,7 +322,7 @@
 			);
 			dependencies = (
 			);
-			name = Ollamac;
+			name = Slacker;
 			packageProductDependencies = (
 				0AA41A162AF635AD0053B8DB /* ViewState */,
 				0ACA4D5D2AF7AC43000DA76F /* SwiftUIIntrospect */,
@@ -336,7 +336,7 @@
 				0AF5CB672C62BCA100DF8DA8 /* AppInfo */,
 			);
 			productName = Ollamac;
-			productReference = 0A4D35812AF541D900846890 /* Ollamac.app */;
+			productReference = 0A4D35812AF541D900846890 /* Slacker.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -354,7 +354,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 0A4D357C2AF541D900846890 /* Build configuration list for PBXProject "Ollamac" */;
+			buildConfigurationList = 0A4D357C2AF541D900846890 /* Build configuration list for PBXProject "Slacker" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -379,7 +379,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				0A4D35802AF541D900846890 /* Ollamac */,
+				0A4D35802AF541D900846890 /* Slacker */,
 			);
 		};
 /* End PBXProject section */
@@ -420,7 +420,7 @@
 				0AF5662E2C6431FB00D6E01A /* CircleButton.swift in Sources */,
 				0ADB96132C5D5CC400EB0C60 /* CodeHighlighter.swift in Sources */,
 				0AF5664C2C65A2B400D6E01A /* SectionFooter.swift in Sources */,
-				0ADB96112C5D585500EB0C60 /* Theme+Ollamac.swift in Sources */,
+				0ADB96112C5D585500EB0C60 /* Theme+Slacker.swift in Sources */,
 				0AFC5AA92C66A20C00A148A2 /* CodeBlockView.swift in Sources */,
 				0ADB95EB2C5D41DF00EB0C60 /* ChatView.swift in Sources */,
 				0ADB95E42C5D34B200EB0C60 /* SidebarListItemView.swift in Sources */,
@@ -429,7 +429,7 @@
 				0ADB95E82C5D3BE900EB0C60 /* SidebarContextMenu.swift in Sources */,
 				0AFC5AA52C6694F400A148A2 /* ExperimentalView.swift in Sources */,
 				0AB3629F2C398C3300DE3F31 /* AppUpdater.swift in Sources */,
-				0A4D35852AF541D900846890 /* OllamacApp.swift in Sources */,
+				0A4D35852AF541D900846890 /* SlackerApp.swift in Sources */,
 				0AF5CB622C62B0B600DF8DA8 /* UpdateOllamaHostSheet.swift in Sources */,
 				4A4A8EBE2D5047590065A5EC /* String+ReplaceAndTrim.swift in Sources */,
 				0A6E85102C5E6C670030A4AA /* MessageViewModel.swift in Sources */,
@@ -603,7 +603,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
-				CODE_SIGN_ENTITLEMENTS = Ollamac/Resources/Ollamac.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Ollamac/Resources/Slacker.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -615,7 +615,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Ollamac/Resources/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = Ollamac;
+				INFOPLIST_KEY_CFBundleDisplayName = Slacker;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © Kevin Hermawan. All rights reserved.";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -634,7 +634,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		0A4D357C2AF541D900846890 /* Build configuration list for PBXProject "Ollamac" */ = {
+		0A4D357C2AF541D900846890 /* Build configuration list for PBXProject "Slacker" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				0A4D35902AF541DA00846890 /* Debug */,
@@ -643,7 +643,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		0A4D35922AF541DA00846890 /* Build configuration list for PBXNativeTarget "Ollamac" */ = {
+		0A4D35922AF541DA00846890 /* Build configuration list for PBXNativeTarget "Slacker" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				0A4D35932AF541DA00846890 /* Debug */,

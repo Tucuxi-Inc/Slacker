@@ -1,6 +1,6 @@
 //
 //  ChatPreferencesView.swift
-//  Ollamac
+//  Slacker
 //
 //  Created by Kevin Hermawan on 8/4/24.
 //
