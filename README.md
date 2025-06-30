@@ -1,7 +1,7 @@
 <div>
   <div align="center">
     <img alt="app icon" src="./Ollamac/Resources/Assets.xcassets/AppIcon.appiconset/AppIcon_256x256.png" width="128px" height="128px">
-    <h1>Ollamac - Mac app for <a href="https://github.com/ollama/ollama">Ollama</a></h1>
+    <h1>Slacker - Mac app for <a href="https://github.com/ollama/ollama">Ollama</a></h1>
     <picture>
       <source media="(prefers-color-scheme: dark)" srcset="./assets/banner-night.jpg">
       <img alt="banner" src="./assets/banner.jpg">
@@ -69,3 +69,7 @@ I'm grateful for the support from the community that enables me to continue deve
 ## License
 
 This repository is available under the [Apache License 2.0](/LICENSE), with a few additional restrictions.
+
+## Original Project
+
+This is a fork of [Ollamac](https://github.com/kevinhermawan/Ollamac) by Kevin Hermawan. We appreciate the original work and continue to build upon it.
