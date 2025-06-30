@@ -1,6 +1,6 @@
 //
-//  Theme+Ollamac.swift
-//  Ollamac
+//  Theme+Slacker.swift
+//  Slacker
 //
 //  Created by Kevin Hermawan on 8/3/24.
 //
@@ -64,7 +64,7 @@ class ThemeCache {
 }
 
 extension Theme {
-    static var ollamac: Theme {
+    static var slacker: Theme {
         ThemeCache.shared.getTheme()
     }
 }

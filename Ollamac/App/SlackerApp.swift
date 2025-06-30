@@ -1,6 +1,6 @@
 //
-//  OllamacApp.swift
-//  Ollamac
+//  SlackerApp.swift
+//  Slacker
 //
 //  Created by Kevin Hermawan on 03/11/23.
 //
@@ -12,7 +12,7 @@ import SwiftUI
 import SwiftData
 
 @main
-struct OllamacApp: App {
+struct SlackerApp: App {
     @State private var appUpdater: AppUpdater
     private var updater: SPUUpdater
     
@@ -81,8 +81,8 @@ struct OllamacApp: App {
             }
             
             CommandGroup(replacing: .help) {
-                if let helpURL = AppInfo.value(for: "HELP_URL"), let url = URL(string: helpURL) {
-                    Link("Ollamac Help", destination: url)
+                if let url = URL(string: "https://github.com/Tucuxi-Inc/Slacker") {
+                    Link("Slacker Help", destination: url)
                 }
             }
 

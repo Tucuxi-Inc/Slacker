@@ -50,7 +50,7 @@ struct AssistantMessageView: View {
                         FontSize(CGFloat(fontSize))
                         FontFamily(.system(.monospaced))
                     }
-                    .markdownTheme(.ollamac)
+                                                .markdownTheme(.slacker)
                     .markdownCodeSyntaxHighlighter(experimentalCodeHighlighting ? codeHighlighter : .plainText)
                     .id(codeHighlighter.stateHashValue)
 
