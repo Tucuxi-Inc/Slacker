@@ -14,33 +14,10 @@
 	<key>com.apple.security.files.downloads.read-write</key>
 	<true/>
 	
-	<!-- Network Access -->
+	<!-- Network Access (for Ollama and webhook server) -->
 	<key>com.apple.security.network.client</key>
 	<true/>
 	<key>com.apple.security.network.server</key>
-	<true/>
-	
-	<!-- Sparkle Auto-Update Support -->
-	<key>com.apple.security.temporary-exception.mach-lookup.global-name</key>
-	<array>
-		<string>$(PRODUCT_BUNDLE_IDENTIFIER)-spks</string>
-		<string>$(PRODUCT_BUNDLE_IDENTIFIER)-spki</string>
-	</array>
-	
-	<!-- Additional Sparkle Requirements for TestFlight -->
-	<key>com.apple.security.temporary-exception.shared-preference.read-write</key>
-	<array>
-		<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
-	</array>
-	
-	<!-- XPC Services (for Sparkle's Downloader and Installer) -->
-	<key>com.apple.security.temporary-exception.mach-register.global-name</key>
-	<array>
-		<string>$(PRODUCT_BUNDLE_IDENTIFIER).xpc.*</string>
-	</array>
-	
-	<!-- Child Process Inheritance -->
-	<key>com.apple.security.inherit</key>
 	<true/>
 	
 	<!-- Print (in case needed for debugging or user workflows) -->

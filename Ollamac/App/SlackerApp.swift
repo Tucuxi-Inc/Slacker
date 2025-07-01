@@ -6,20 +6,14 @@
 //
 
 import Defaults
-import AppInfo
-import Sparkle
 import SwiftUI
 import SwiftData
 
 @main
 struct SlackerApp: App {
-    @State private var appUpdater: AppUpdater
-    private var updater: SPUUpdater
-    
     @State private var chatViewModel: ChatViewModel
     @State private var messageViewModel: MessageViewModel
-    @State private var codeHighlighter: CodeHighlighter
-
+    
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([Chat.self, Message.self])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
@@ -34,50 +28,40 @@ struct SlackerApp: App {
     init() {
         let modelContext = sharedModelContainer.mainContext
         
-        let updaterController = SPUStandardUpdaterController(startingUpdater: true, updaterDelegate: nil, userDriverDelegate: nil)
-        self.updater = updaterController.updater
-        
-        let appUpdater = AppUpdater(updater)
-        self._appUpdater = State(initialValue: appUpdater)
-        
         let chatViewModel = ChatViewModel(modelContext: modelContext)
-        self._chatViewModel = State(initialValue: chatViewModel)
-        
         let messageViewModel = MessageViewModel(modelContext: modelContext)
-        self._messageViewModel = State(initialValue: messageViewModel)
-
-        let codeHighlighter =  CodeHighlighter(colorScheme: .light, fontSize: Defaults[.fontSize], enabled: Defaults[.experimentalCodeHighlighting])
-        _codeHighlighter = State(initialValue: codeHighlighter)
-
-        chatViewModel.create(model: Defaults[.defaultModel])
-        guard let activeChat = chatViewModel.selectedChats
-            .first else { return }
         
-        chatViewModel.activeChat = activeChat
-        messageViewModel.load(of: activeChat)
+        self._chatViewModel = State(initialValue: chatViewModel)
+        self._messageViewModel = State(initialValue: messageViewModel)
     }
     
     var body: some Scene {
         WindowGroup {
             AppView()
-                .environment(chatViewModel)
-                .environment(messageViewModel)
-                .environment(codeHighlighter)
+                .environmentObject(chatViewModel)
+                .environmentObject(messageViewModel)
         }
         .modelContainer(sharedModelContainer)
-        .keyboardShortcut(KeyboardShortcut("n", modifiers: [.command, .shift]))
+        .windowResizability(.contentSize)
+        .windowToolbarStyle(.unified(showsTitle: false))
         .commands {
-            CommandGroup(replacing: .textEditing) {
-                if chatViewModel.selectedChats.count > 0 {
-                    SidebarContextMenu(chatViewModel: chatViewModel)
+            CommandGroup(replacing: .appInfo) {
+                Button("About Slacker") {
+                    NSApplication.shared.orderFrontStandardAboutPanel(
+                        options: [
+                            NSApplication.AboutPanelOptionKey.credits: NSAttributedString(
+                                string: "A simple macOS app for Ollama",
+                                attributes: [
+                                    NSAttributedString.Key.font: NSFont.systemFont(ofSize: 11),
+                                    NSAttributedString.Key.foregroundColor: NSColor.secondaryLabelColor
+                                ]
+                            ),
+                            NSApplication.AboutPanelOptionKey.applicationName: "Slacker",
+                            NSApplication.AboutPanelOptionKey.applicationVersion: Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "",
+                            NSApplication.AboutPanelOptionKey.version: ""
+                        ]
+                    )
                 }
-            }
-            
-            CommandGroup(after: .appInfo) {
-                Button("Check for Updates...") {
-                    updater.checkForUpdates()
-                }
-                .disabled(appUpdater.canCheckForUpdates == false)
             }
             
             CommandGroup(replacing: .help) {
@@ -85,27 +69,7 @@ struct SlackerApp: App {
                     Link("Slacker Help", destination: url)
                 }
             }
-
-            CommandGroup(after: .textEditing) {
-                Divider()
-                Button("Increase font size", action: increaseFontSize)
-                    .keyboardShortcut("+", modifiers: [.command], localization: .custom)
-
-                Button("Decrease font size", action: decreaseFontSize)
-                    .keyboardShortcut("-", modifiers: [.command], localization: .custom)
-            }
         }
-        
-        Settings {
-            SettingsView()
-        }
-    }
-
-    func increaseFontSize() {
-        Defaults[.fontSize] += 1
-    }
-
-    func decreaseFontSize() {
-        Defaults[.fontSize] = max(Defaults[.fontSize] - 1, 8)
+        .defaultSize(CGSize(width: 1024, height: 768))
     }
 }
