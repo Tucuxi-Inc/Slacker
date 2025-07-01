@@ -13,6 +13,7 @@ import SwiftData
 struct SlackerApp: App {
     @State private var chatViewModel: ChatViewModel
     @State private var messageViewModel: MessageViewModel
+    @State private var codeHighlighter: CodeHighlighter
     
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([Chat.self, Message.self])
@@ -30,16 +31,19 @@ struct SlackerApp: App {
         
         let chatViewModel = ChatViewModel(modelContext: modelContext)
         let messageViewModel = MessageViewModel(modelContext: modelContext)
+        let codeHighlighter = CodeHighlighter(colorScheme: .light, fontSize: Defaults[.fontSize], enabled: Defaults[.experimentalCodeHighlighting])
         
         self._chatViewModel = State(initialValue: chatViewModel)
         self._messageViewModel = State(initialValue: messageViewModel)
+        self._codeHighlighter = State(initialValue: codeHighlighter)
     }
     
     var body: some Scene {
         WindowGroup {
             AppView()
-                .environmentObject(chatViewModel)
-                .environmentObject(messageViewModel)
+                .environment(chatViewModel)
+                .environment(messageViewModel)
+                .environment(codeHighlighter)
         }
         .modelContainer(sharedModelContainer)
         .windowResizability(.contentSize)
