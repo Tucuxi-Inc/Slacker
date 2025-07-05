@@ -1,61 +1,61 @@
 {
   "images" : [
     {
-      "filename" : "Slacker_Logo_16.png",
+      "filename" : "SlackSassin_Logo_16.png",
       "idiom" : "mac",
       "scale" : "1x",
       "size" : "16x16"
     },
     {
-      "filename" : "Slacker_Logo_32 1.png",
+      "filename" : "SlackSassin_Logo_32 1.png",
       "idiom" : "mac",
       "scale" : "2x",
       "size" : "16x16"
     },
     {
-      "filename" : "Slacker_Logo_32.png",
+      "filename" : "SlackSassin_Logo_32.png",
       "idiom" : "mac",
       "scale" : "1x",
       "size" : "32x32"
     },
     {
-      "filename" : "Slacker_Logo_64.png",
+      "filename" : "SlackSassin_Logo_64.png",
       "idiom" : "mac",
       "scale" : "2x",
       "size" : "32x32"
     },
     {
-      "filename" : "Slacker_Logo_128.png",
+      "filename" : "SlackSassin_Logo_128.png",
       "idiom" : "mac",
       "scale" : "1x",
       "size" : "128x128"
     },
     {
-      "filename" : "Slacker_Logo_256 1.png",
+      "filename" : "SlackSassin_Logo_256 1.png",
       "idiom" : "mac",
       "scale" : "2x",
       "size" : "128x128"
     },
     {
-      "filename" : "Slacker_Logo_256.png",
+      "filename" : "SlackSassin_Logo_256.png",
       "idiom" : "mac",
       "scale" : "1x",
       "size" : "256x256"
     },
     {
-      "filename" : "Slacker_Logo_512 1.png",
+      "filename" : "SlackSassin_Logo_512 1.png",
       "idiom" : "mac",
       "scale" : "2x",
       "size" : "256x256"
     },
     {
-      "filename" : "Slacker_Logo_512.png",
+      "filename" : "SlackSassin_Logo_512.png",
       "idiom" : "mac",
       "scale" : "1x",
       "size" : "512x512"
     },
     {
-      "filename" : "Slacker_Logo.png",
+      "filename" : "SlackSassin_Logo_1024.png",
       "idiom" : "mac",
       "scale" : "2x",
       "size" : "512x512"

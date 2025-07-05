@@ -19,5 +19,13 @@ extension Defaults.Keys {
     static let defaultTopP = Key<Double>("defaultTopP", default: 0.9)
     static let defaultTopK = Key<Int>("defaultTopK", default: 40)
     
+    // SlackOff-specific settings
+    static let slackOffModel = Key<String>("slackOffModel", default: "granite3.3:2b")
+    static let slackOffSystemPrompt = Key<String>("slackOffSystemPrompt", default: "You're SlackSassin, a helpful assistant that responds to Slack messages professionally and concisely. Keep responses brief and actionable.")
+    static let slackOffAutoResponse = Key<Bool>("slackOffAutoResponse", default: true)
+    static let slackOffTemperature = Key<Double>("slackOffTemperature", default: 0.7)
+    static let slackOffTopP = Key<Double>("slackOffTopP", default: 0.9)
+    static let slackOffTopK = Key<Int>("slackOffTopK", default: 40)
+    
     static let experimentalCodeHighlighting = Key<Bool>("experimentalCodeHighlighting", default: false)
 }
