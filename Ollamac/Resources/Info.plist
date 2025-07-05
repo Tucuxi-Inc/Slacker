@@ -3,12 +3,6 @@
 <plist version="1.0">
 <dict>
 	<key>HELP_URL</key>
-	<string>https://github.com/kevinhermawan/Ollamac/issues</string>
-	<key>SUEnableInstallerLauncherService</key>
-	<true/>
-	<key>SUFeedURL</key>
-	<string>https://raw.githubusercontent.com/kevinhermawan/Ollamac/main/appcast.xml</string>
-	<key>SUPublicEDKey</key>
-	<string>xEv1HCqq1iI29hbUSHP7BuExQBfIMupe2d1Xa5bvW2Y=</string>
+	<string>https://github.com/Tucuxi-Inc/Slacker/issues</string>
 </dict>
 </plist>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "1600"
+   LastUpgradeVersion = "1640"
    version = "1.7">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -16,9 +16,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "0A4D35802AF541D900846890"
-               BuildableName = "Ollamac.app"
-               BlueprintName = "Ollamac"
-               ReferencedContainer = "container:Ollamac.xcodeproj">
+               BuildableName = "Slacker.app"
+               BlueprintName = "Slacker"
+               ReferencedContainer = "container:Slacker.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -45,9 +45,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "0A4D35802AF541D900846890"
-            BuildableName = "Ollamac.app"
-            BlueprintName = "Ollamac"
-            ReferencedContainer = "container:Ollamac.xcodeproj">
+            BuildableName = "Slacker.app"
+            BlueprintName = "Slacker"
+            ReferencedContainer = "container:Slacker.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -62,9 +62,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "0A4D35802AF541D900846890"
-            BuildableName = "Ollamac.app"
-            BlueprintName = "Ollamac"
-            ReferencedContainer = "container:Ollamac.xcodeproj">
+            BuildableName = "Slacker.app"
+            BlueprintName = "Slacker"
+            ReferencedContainer = "container:Slacker.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

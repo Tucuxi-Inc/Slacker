@@ -1,6 +1,6 @@
 //
 //  ChatView.swift
-//  Ollamac
+//  Slacker
 //
 //  Created by Kevin Hermawan on 8/2/24.
 //
@@ -121,7 +121,7 @@ struct ChatView: View {
                 codeHighlighter.enabled = experimentalCodeHighlighting
             }
         }
-        .navigationTitle(chatViewModel.activeChat?.name ?? "Ollamac")
+        .navigationTitle(chatViewModel.activeChat?.name ?? "Slacker")
         .navigationSubtitle(chatViewModel.activeChat?.model ?? "")
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
