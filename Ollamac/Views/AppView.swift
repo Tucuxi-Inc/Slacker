@@ -1,6 +1,6 @@
 //
 //  AppView.swift
-//  Ollamac
+//  Slacker
 //
 //  Created by Kevin Hermawan on 03/11/23.
 //

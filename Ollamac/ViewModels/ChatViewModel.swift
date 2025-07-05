@@ -72,8 +72,8 @@ final class ChatViewModel {
                     return
                 }
                 
-                if let host = activeChat?.host, host.isEmpty {
-                    self.activeChat?.host = self.models.first
+                if let model = activeChat?.model, model.isEmpty {
+                    self.activeChat?.model = self.models.first ?? ""
                 }
             } catch {
                 self.error = .fetchModels(error.localizedDescription)
