@@ -8,15 +8,29 @@
 import Defaults
 import SwiftUI
 import SwiftData
+import Foundation
+import Network
+
+// Navigation modes for the app
+enum AppViewMode {
+    case slackOff  // Primary: Slack message processing
+    case chat      // Secondary: Traditional AI chat
+}
 
 @main
 struct SlackerApp: App {
     @State private var chatViewModel: ChatViewModel
     @State private var messageViewModel: MessageViewModel
+    @State private var slackMessageViewModel: SlackMessageViewModel
     @State private var codeHighlighter: CodeHighlighter
+    @State private var webhookServer: SlackerWebhookServer
+    @State private var ngrokManager: NGrokManager
+    
+    // Navigation state for SlackOff vs Chat modes
+    @State private var currentView: AppViewMode = .slackOff
     
     var sharedModelContainer: ModelContainer = {
-        let schema = Schema([Chat.self, Message.self])
+        let schema = Schema([Chat.self, Message.self, SlackMessage.self])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
         
         do {
@@ -31,19 +45,81 @@ struct SlackerApp: App {
         
         let chatViewModel = ChatViewModel(modelContext: modelContext)
         let messageViewModel = MessageViewModel(modelContext: modelContext)
+        let slackMessageViewModel = SlackMessageViewModel(modelContext: modelContext)
         let codeHighlighter = CodeHighlighter(colorScheme: .light, fontSize: Defaults[.fontSize], enabled: Defaults[.experimentalCodeHighlighting])
+        let webhookServer = SlackerWebhookServer(modelContext: modelContext)
+        let ngrokManager = NGrokManager.shared
         
         self._chatViewModel = State(initialValue: chatViewModel)
         self._messageViewModel = State(initialValue: messageViewModel)
+        self._slackMessageViewModel = State(initialValue: slackMessageViewModel)
         self._codeHighlighter = State(initialValue: codeHighlighter)
+        self._webhookServer = State(initialValue: webhookServer)
+        self._ngrokManager = State(initialValue: ngrokManager)
     }
     
     var body: some Scene {
         WindowGroup {
-            AppView()
+            // TODO: Add SlackOffView once it's added to Xcode project
+            // For now, showing AppView with navigation button to switch modes
+            AppView(currentView: $currentView)
                 .environment(chatViewModel)
                 .environment(messageViewModel)
+                .environment(slackMessageViewModel)
                 .environment(codeHighlighter)
+                .environment(webhookServer)
+                .environment(ngrokManager)
+                .onAppear {
+                    // Auto-start the webhook server
+                    webhookServer.startServer()
+                    
+                    // Check for external NGrok tunnel (don't try to start automatically)
+                    Task {
+                        await ngrokManager.checkExternalTunnel()
+                    }
+                    
+                    // Print debug info after startup
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
+                        print("\n🔧 ===== SLACKSASSIN STARTUP STATUS =====")
+                        
+                        // Webhook server status
+                        if webhookServer.isRunning {
+                            print("✅ SlackerWebhookServer is running!")
+                            print("📍 Local URLs:")
+                            print("   Health: http://localhost:8080/health")
+                            print("   Status: http://localhost:8080/status")
+                            print("   Webhook: http://localhost:8080/zapier-webhook (POST)")
+                        } else {
+                            print("❌ SlackerWebhookServer failed to start")
+                            if let error = webhookServer.lastError {
+                                print("   Error: \(error)")
+                            }
+                        }
+                        
+                        // NGrok tunnel status
+                        if ngrokManager.isRunning {
+                            print("✅ NGrok tunnel is detected!")
+                            if let tunnelURL = ngrokManager.tunnelURL {
+                                print("🌐 NGrok URLs:")
+                                print("   Health: \(tunnelURL)/health")
+                                print("   Status: \(tunnelURL)/status")
+                                print("   Webhook: \(tunnelURL)/zapier-webhook (POST)")
+                            }
+                        } else {
+                            print("❌ NGrok tunnel not detected")
+                            print("💡 Manual setup: Run 'ngrok http --url=relaxing-sensibly-ghost.ngrok-free.app 8080' in Terminal")
+                            print("   Then use Settings → Experimental → Check External to detect it")
+                        }
+                        
+                        print("🏁 SlackSassin startup complete!\n")
+                    }
+                }
+                .onDisappear {
+                    // Clean shutdown
+                    print("🛑 SlackSassin shutting down...")
+                    webhookServer.stopServer()
+                    ngrokManager.stopTunnel()
+                }
         }
         .modelContainer(sharedModelContainer)
         .windowResizability(.contentSize)
