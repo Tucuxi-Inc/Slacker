@@ -226,7 +226,7 @@ struct EmptyStateView: View {
                         Text("Webhook URL:")
                             .font(.caption)
                             .foregroundColor(.secondary)
-                        Text("https://relaxing-sensibly-ghost.ngrok-free.app/zapier-webhook")
+                        Text("https://[your-ngrok-tunnel].ngrok-free.app/zapier-webhook")
                             .font(.caption)
                             .foregroundColor(.blue)
                             .textSelection(.enabled)

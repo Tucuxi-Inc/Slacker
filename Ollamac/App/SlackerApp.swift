@@ -107,7 +107,7 @@ struct SlackerApp: App {
                             }
                         } else {
                             print("❌ NGrok tunnel not detected")
-                            print("💡 Manual setup: Run 'ngrok http --url=relaxing-sensibly-ghost.ngrok-free.app 8080' in Terminal")
+                            print("💡 Manual setup: Run 'ngrok http --url=[INSERT YOUR ENDPOINT URL HERE].ngrok-free.app 8080' in Terminal")
                             print("   Then use Settings → Experimental → Check External to detect it")
                         }
                         

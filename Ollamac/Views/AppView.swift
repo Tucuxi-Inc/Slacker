@@ -80,7 +80,7 @@ struct SlackOffPlaceholderView: View {
                         .font(.headline)
                         .foregroundColor(.green)
                     
-                    Text("Webhook URL: https://relaxing-sensibly-ghost.ngrok-free.app/zapier-webhook")
+                    Text("Webhook URL: https://[your-ngrok-tunnel-host].ngrok-free.app/zapier-webhook")
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }

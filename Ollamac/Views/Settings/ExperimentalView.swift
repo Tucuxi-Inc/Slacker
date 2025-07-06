@@ -38,6 +38,14 @@ struct ExperimentalView: View {
             } footer: {
                 SectionFooter("External tunnel service for webhook connectivity.")
             }
+            
+            Section {
+                SlackSassinConfigView()
+            } header: {
+                Text("SlackSassin Configuration")
+            } footer: {
+                SectionFooter("Configure webhook URLs for Slack integration.")
+            }
         }
     }
 }
@@ -121,5 +129,187 @@ struct NGrokStatusView: View {
                 }
             }
         }
+    }
+}
+
+struct SlackSassinConfigView: View {
+    @State private var zapierWebhookURL: String = ""
+    @State private var ngrokStaticURL: String = ""
+    @State private var webhookServerPort: Int = 8080
+    @State private var showingAlert = false
+    @State private var alertMessage = ""
+    @State private var isConfigured = false
+    
+    var body: some View {
+        Box {
+            VStack(alignment: .leading, spacing: 12) {
+                // Configuration status
+                HStack {
+                    Image(systemName: isConfigured ? "checkmark.circle.fill" : "exclamationmark.circle.fill")
+                        .foregroundColor(isConfigured ? .green : .orange)
+                    
+                    Text(isConfigured ? "SlackSassin Configured" : "Configuration Required")
+                        .fontWeight(.semibold)
+                    
+                    Spacer()
+                }
+                
+                // Zapier Webhook URL
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Zapier Webhook URL:")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    
+                    HStack {
+                        TextField("https://hooks.zapier.com/hooks/catch/...", text: $zapierWebhookURL)
+                            .textFieldStyle(.roundedBorder)
+                            .font(.system(.caption, design: .monospaced))
+                        
+                        Button("Clear") {
+                            zapierWebhookURL = ""
+                        }
+                        .buttonStyle(.borderless)
+                        .font(.caption)
+                    }
+                }
+                
+                // NGrok Static URL
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("NGrok Static URL:")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    
+                    HStack {
+                        TextField("your-static-url.ngrok-free.app", text: $ngrokStaticURL)
+                            .textFieldStyle(.roundedBorder)
+                            .font(.system(.caption, design: .monospaced))
+                        
+                        Button("Clear") {
+                            ngrokStaticURL = ""
+                        }
+                        .buttonStyle(.borderless)
+                        .font(.caption)
+                    }
+                }
+                
+                // Webhook Server Port
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Webhook Server Port:")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    
+                    HStack {
+                        TextField("8080", value: $webhookServerPort, format: .number)
+                            .textFieldStyle(.roundedBorder)
+                            .font(.system(.caption, design: .monospaced))
+                            .frame(width: 80)
+                        
+                        Text("(1024-65535)")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        
+                        Spacer()
+                    }
+                }
+                
+                // Action buttons
+                HStack {
+                    Button("Save Configuration") {
+                        saveConfiguration()
+                    }
+                    .buttonStyle(.borderedProminent)
+                    
+                    Button("Clear All") {
+                        clearConfiguration()
+                    }
+                    .buttonStyle(.bordered)
+                    
+                    Spacer()
+                    
+                    Button("Test Configuration") {
+                        testConfiguration()
+                    }
+                    .buttonStyle(.borderless)
+                }
+            }
+        }
+        .onAppear {
+            loadConfiguration()
+        }
+        .alert("Configuration", isPresented: $showingAlert) {
+            Button("OK") { }
+        } message: {
+            Text(alertMessage)
+        }
+    }
+    
+    private func loadConfiguration() {
+        zapierWebhookURL = SlackerConfig.shared.getZapierWebhookURL() ?? ""
+        ngrokStaticURL = SlackerConfig.shared.getNgrokStaticURL() ?? ""
+        webhookServerPort = SlackerConfig.shared.getWebhookServerPort()
+        isConfigured = SlackerConfig.shared.isConfigured()
+    }
+    
+    private func saveConfiguration() {
+        do {
+            // Save Zapier webhook URL
+            if !zapierWebhookURL.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                try SlackerConfig.shared.setZapierWebhookURL(zapierWebhookURL.trimmingCharacters(in: .whitespacesAndNewlines))
+            }
+            
+            // Save NGrok static URL
+            if !ngrokStaticURL.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                try SlackerConfig.shared.setNgrokStaticURL(ngrokStaticURL.trimmingCharacters(in: .whitespacesAndNewlines))
+            }
+            
+            // Save webhook server port
+            try SlackerConfig.shared.setWebhookServerPort(webhookServerPort)
+            
+            // Update status
+            isConfigured = SlackerConfig.shared.isConfigured()
+            
+            alertMessage = "Configuration saved successfully!"
+            showingAlert = true
+            
+        } catch {
+            alertMessage = "Failed to save configuration: \(error.localizedDescription)"
+            showingAlert = true
+        }
+    }
+    
+    private func clearConfiguration() {
+        SlackerConfig.shared.clearConfiguration()
+        loadConfiguration()
+        alertMessage = "Configuration cleared successfully!"
+        showingAlert = true
+    }
+    
+    private func testConfiguration() {
+        // Simple validation test
+        var issues: [String] = []
+        
+        if zapierWebhookURL.isEmpty {
+            issues.append("Zapier webhook URL is required")
+        } else if !zapierWebhookURL.contains("hooks.zapier.com") {
+            issues.append("Zapier webhook URL should contain 'hooks.zapier.com'")
+        }
+        
+        if ngrokStaticURL.isEmpty {
+            issues.append("NGrok static URL is required")
+        } else if !ngrokStaticURL.contains("ngrok") {
+            issues.append("NGrok static URL should contain 'ngrok'")
+        }
+        
+        if webhookServerPort < 1024 || webhookServerPort > 65535 {
+            issues.append("Webhook server port must be between 1024 and 65535")
+        }
+        
+        if issues.isEmpty {
+            alertMessage = "Configuration looks good! ✅"
+        } else {
+            alertMessage = "Configuration issues found:\n\n" + issues.joined(separator: "\n")
+        }
+        
+        showingAlert = true
     }
 }

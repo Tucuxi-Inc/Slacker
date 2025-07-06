@@ -300,7 +300,7 @@ class SlackerWebhookServer {
             
             let responseData = [
                 "test_sent": success,
-                "zapier_url": await SlackerConfig.shared.getZapierWebhookURL() ?? "Not configured",
+                "zapier_url": SlackerConfig.shared.getZapierWebhookURL() ?? "Not configured",
                 "message": success ? "Test response sent successfully!" : "Failed to send test response"
             ] as [String : Any]
             
@@ -359,7 +359,7 @@ class SlackerWebhookServer {
     
     func sendResponseToZapier(_ payload: ZapierResponsePayload) async -> Bool {
         // Get configured webhook URL
-        guard let zapierWebhookURL = await SlackerConfig.shared.getZapierWebhookURL() else {
+        guard let zapierWebhookURL = SlackerConfig.shared.getZapierWebhookURL() else {
             await MainActor.run {
                 logDebug("❌ Zapier webhook URL not configured")
             }
