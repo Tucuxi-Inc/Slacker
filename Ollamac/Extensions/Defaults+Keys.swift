@@ -28,4 +28,12 @@ extension Defaults.Keys {
     static let slackOffTopK = Key<Int>("slackOffTopK", default: 40)
     
     static let experimentalCodeHighlighting = Key<Bool>("experimentalCodeHighlighting", default: false)
+    
+    // MARK: - SlackSassin Configuration
+    static let zapierWebhookURL = Key<String>("zapierWebhookURL", default: "")
+    static let ngrokStaticURL = Key<String>("ngrokStaticURL", default: "")
+    static let webhookServerPort = Key<Int>("webhookServerPort", default: 8080)
+    
+    // Security: Mark sensitive configuration
+    static let zapierWebhookURLConfigured = Key<Bool>("zapierWebhookURLConfigured", default: false)
 }

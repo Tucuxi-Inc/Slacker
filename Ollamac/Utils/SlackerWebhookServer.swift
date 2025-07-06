@@ -12,7 +12,7 @@ import SwiftData
 @MainActor
 @Observable
 class SlackerWebhookServer {
-    private let port: UInt16 = 8080
+    private var port: UInt16 { UInt16(SlackerConfig.shared.getWebhookServerPort()) }
     private var listener: NWListener?
     
     var isRunning: Bool = false
@@ -24,9 +24,6 @@ class SlackerWebhookServer {
     // Published properties for UI
     var serverStartTime: Date?
     var lastRequestTime: Date?
-    
-    // Zapier response webhook URL
-    private let zapierResponseWebhookURL = "https://hooks.zapier.com/hooks/catch/17350644/u3d6ywx"
     
     // SwiftData ModelContext for database operations
     private let modelContext: ModelContext
@@ -264,7 +261,7 @@ class SlackerWebhookServer {
             "uptime_seconds": uptime,
             "started_at": serverStartTime?.timeIntervalSince1970 ?? 0,
             "last_request": lastRequestTime?.timeIntervalSince1970 ?? 0,
-            "zapier_response_url": zapierResponseWebhookURL,
+            "zapier_response_url": SlackerConfig.shared.getZapierWebhookURL() ?? "Not configured",
             "endpoints": [
                 "/zapier-webhook (POST)",
                 "/health (GET)",
@@ -303,7 +300,7 @@ class SlackerWebhookServer {
             
             let responseData = [
                 "test_sent": success,
-                "zapier_url": zapierResponseWebhookURL,
+                "zapier_url": await SlackerConfig.shared.getZapierWebhookURL() ?? "Not configured",
                 "message": success ? "Test response sent successfully!" : "Failed to send test response"
             ] as [String : Any]
             
@@ -361,13 +358,21 @@ class SlackerWebhookServer {
     // MARK: - Response Sending to Zapier
     
     func sendResponseToZapier(_ payload: ZapierResponsePayload) async -> Bool {
+        // Get configured webhook URL
+        guard let zapierWebhookURL = await SlackerConfig.shared.getZapierWebhookURL() else {
+            await MainActor.run {
+                logDebug("❌ Zapier webhook URL not configured")
+            }
+            return false
+        }
+        
         await MainActor.run {
             logDebug("📤 Sending response to Zapier webhook...")
-            logDebug("🔗 Zapier URL: \(zapierResponseWebhookURL)")
+            logDebug("🔗 Zapier URL: \(zapierWebhookURL)")
             logDebug("💬 Response: \(String(payload.responseText.prefix(50)))...")
         }
         
-        guard let url = URL(string: zapierResponseWebhookURL) else {
+        guard let url = URL(string: zapierWebhookURL) else {
             await MainActor.run {
                 logDebug("❌ Invalid Zapier webhook URL")
             }

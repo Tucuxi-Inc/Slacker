@@ -343,8 +343,10 @@ final class SlackMessageViewModel {
             timestamp: Date()
         )
         
-        // Send to Zapier webhook URL
-        let zapierWebhookURL = "https://hooks.zapier.com/hooks/catch/17350644/u3d6ywx"
+        // Get configured Zapier webhook URL
+        guard let zapierWebhookURL = await SlackerConfig.shared.getZapierWebhookURL() else {
+            throw SlackMessageError.webhookNotConfigured
+        }
         
         guard let url = URL(string: zapierWebhookURL) else {
             throw SlackMessageError.invalidWebhookURL
@@ -530,6 +532,7 @@ enum SlackMessageError: LocalizedError {
     case messageNotFound
     case invalidWebhookURL
     case webhookSendFailed
+    case webhookNotConfigured
     
     var errorDescription: String? {
         switch self {
@@ -539,6 +542,8 @@ enum SlackMessageError: LocalizedError {
             return "Invalid webhook URL"
         case .webhookSendFailed:
             return "Failed to send webhook response"
+        case .webhookNotConfigured:
+            return "Zapier webhook URL not configured"
         }
     }
 }

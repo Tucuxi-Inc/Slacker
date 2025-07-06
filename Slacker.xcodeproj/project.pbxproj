@@ -55,6 +55,7 @@
 		4A4A8EBE2D5047590065A5EC /* String+ReplaceAndTrim.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A4A8EBD2D5047590065A5EC /* String+ReplaceAndTrim.swift */; };
 		88DBD84C2E16F212005FC390 /* SlackMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88DBD84B2E16F212005FC390 /* SlackMessage.swift */; };
 		88DBD84E2E16F234005FC390 /* SlackerWebhookServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88DBD84D2E16F234005FC390 /* SlackerWebhookServer.swift */; };
+		88DBD84F2E16F235005FC390 /* SlackerConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88DBD8512E16F235005FC390 /* SlackerConfig.swift */; };
 		88DBD8502E16F243005FC390 /* SlackMessageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88DBD84F2E16F243005FC390 /* SlackMessageViewModel.swift */; };
 		88DBD8542E1702C8005FC390 /* WebhookTester.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88DBD8532E1702C8005FC390 /* WebhookTester.swift */; };
 		88DBD8562E18AD9E005FC390 /* NGrokManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88DBD8552E18AD9E005FC390 /* NGrokManager.swift */; };
@@ -104,6 +105,7 @@
 		4A4A8EBD2D5047590065A5EC /* String+ReplaceAndTrim.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+ReplaceAndTrim.swift"; sourceTree = "<group>"; };
 		88DBD84B2E16F212005FC390 /* SlackMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlackMessage.swift; sourceTree = "<group>"; };
 		88DBD84D2E16F234005FC390 /* SlackerWebhookServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlackerWebhookServer.swift; sourceTree = "<group>"; };
+		88DBD8512E16F235005FC390 /* SlackerConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlackerConfig.swift; sourceTree = "<group>"; };
 		88DBD84F2E16F243005FC390 /* SlackMessageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlackMessageViewModel.swift; sourceTree = "<group>"; };
 		88DBD8532E1702C8005FC390 /* WebhookTester.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebhookTester.swift; sourceTree = "<group>"; };
 		88DBD8552E18AD9E005FC390 /* NGrokManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NGrokManager.swift; sourceTree = "<group>"; };
@@ -266,6 +268,7 @@
 			children = (
 				88DBD8552E18AD9E005FC390 /* NGrokManager.swift */,
 				88DBD8532E1702C8005FC390 /* WebhookTester.swift */,
+				88DBD8512E16F235005FC390 /* SlackerConfig.swift */,
 				88DBD84D2E16F234005FC390 /* SlackerWebhookServer.swift */,
 				0AF5664B2C65A2B400D6E01A /* SectionFooter.swift */,
 				0ADB96122C5D5CC400EB0C60 /* CodeHighlighter.swift */,
@@ -435,6 +438,7 @@
 				0AF5664C2C65A2B400D6E01A /* SectionFooter.swift in Sources */,
 				0ADB96112C5D585500EB0C60 /* Theme+Slacker.swift in Sources */,
 				0AFC5AA92C66A20C00A148A2 /* CodeBlockView.swift in Sources */,
+				88DBD84F2E16F235005FC390 /* SlackerConfig.swift in Sources */,
 				88DBD84E2E16F234005FC390 /* SlackerWebhookServer.swift in Sources */,
 				0ADB95EB2C5D41DF00EB0C60 /* ChatView.swift in Sources */,
 				0ADB95E42C5D34B200EB0C60 /* SidebarListItemView.swift in Sources */,
