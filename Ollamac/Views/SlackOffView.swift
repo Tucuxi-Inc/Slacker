@@ -750,6 +750,8 @@ struct ActionButtonsView: View {
     @Binding var showingError: Bool
     @Binding var errorMessage: String
     
+    @State private var includeOriginalMessageInfo = false
+    
     @Environment(SlackMessageViewModel.self) private var slackMessageViewModel
     
     var body: some View {
@@ -798,6 +800,14 @@ struct ActionButtonsView: View {
                 .disabled(generatedResponse.isEmpty)
                 .buttonStyle(.borderedProminent)
             }
+            
+            // Include original message info option
+            if !generatedResponse.isEmpty {
+                Toggle("Include Original Message Info", isOn: $includeOriginalMessageInfo)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .help("When enabled, the response will include context about the original message (Channel, User, Message, Response)")
+            }
         }
     }
     
@@ -822,7 +832,15 @@ struct ActionButtonsView: View {
     private func sendToSlack() {
         Task {
             do {
-                let responseText = editedResponse.isEmpty ? generatedResponse : editedResponse
+                let baseResponse = editedResponse.isEmpty ? generatedResponse : editedResponse
+                
+                // Format response with original message context if requested
+                let responseText = if includeOriginalMessageInfo {
+                    formatResponseWithContext(baseResponse)
+                } else {
+                    baseResponse
+                }
+                
                 try await slackMessageViewModel.sendResponseToSlack(messageId: message.id.uuidString, response: responseText)
                 await slackMessageViewModel.updateMessageStatus(message.id.uuidString, status: .sent)
             } catch {
@@ -832,6 +850,15 @@ struct ActionButtonsView: View {
                 }
             }
         }
+    }
+    
+    private func formatResponseWithContext(_ response: String) -> String {
+        return """
+        **Channel:** #\(message.channelName ?? "unknown")
+        **User:** \(message.userName ?? "Unknown")
+        **Message:** \(message.text)
+        **Response:** \(response)
+        """
     }
 }
 

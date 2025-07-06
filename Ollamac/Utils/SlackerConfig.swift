@@ -95,6 +95,23 @@ class SlackerConfig: ObservableObject {
         Defaults[.webhookServerPort] = 8080
     }
     
+    /// Clear all configuration including hardcoded values (for security cleanup)
+    func clearAllStoredData() {
+        // Clear all keychain entries
+        deleteFromKeychain(service: "SlackSassin", account: "zapierWebhook")
+        
+        // Clear all defaults
+        Defaults[.zapierWebhookURL] = ""
+        Defaults[.zapierWebhookURLConfigured] = false
+        Defaults[.ngrokStaticURL] = ""
+        Defaults[.webhookServerPort] = 8080
+        
+        // Force clear any cached values
+        objectWillChange.send()
+        
+        print("🔧 All SlackSassin configuration cleared!")
+    }
+    
     // MARK: - Validation Methods
     
     private func isValidWebhookURL(_ url: String) -> Bool {
