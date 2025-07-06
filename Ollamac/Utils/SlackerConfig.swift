@@ -2,7 +2,7 @@
 //  SlackerConfig.swift
 //  Slacker
 //
-//  Created by SlackSassin Security Update
+//  Created by Kevin Keller -- Tucuxi, Inc. July 2025
 //
 
 import Foundation

@@ -2,7 +2,7 @@
 //  SlackMessageViewModel.swift
 //  Slacker
 //
-//  Created by SlackSassin Integration
+//  Created by Kevin Keller -- Tucuxi, Inc. July 2025
 //
 
 import Foundation

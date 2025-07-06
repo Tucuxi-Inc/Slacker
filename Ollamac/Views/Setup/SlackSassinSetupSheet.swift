@@ -2,7 +2,7 @@
 //  SlackSassinSetupSheet.swift
 //  Slacker
 //
-//  Created by SlackSassin Setup Flow
+//  Created by Kevin Keller -- Tucuxi, Inc. July 2025
 //
 
 import SwiftUI
