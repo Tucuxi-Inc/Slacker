@@ -1,0 +1,17 @@
+# SlackSassin CODEOWNERS
+# 
+# This file defines who owns which parts of the codebase.
+# Code owners are automatically requested for review when someone opens a pull request
+# that modifies code that they own.
+#
+# More info: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Global code owner - Kevin Keller (Tucuxi, Inc.)
+# All files in the repository require review from Kevin-Tucuxi
+* @Kevin-Tucuxi
+
+# Specific critical directories (reinforcement)
+/Ollamac/ @Kevin-Tucuxi
+/README.md @Kevin-Tucuxi
+/.github/ @Kevin-Tucuxi
+/LICENSE @Kevin-Tucuxi 
