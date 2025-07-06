@@ -19,8 +19,8 @@ class NGrokManager {
     var ngrokProcess: Process?
     
     // Configuration
-    private let staticURL = "relaxing-sensibly-ghost.ngrok-free.app"
-    private let localPort = 8080
+    private var staticURL: String? { SlackerConfig.shared.getNgrokStaticURL() }
+    private var localPort: Int { SlackerConfig.shared.getWebhookServerPort() }
     
     private init() {}
     
@@ -49,6 +49,13 @@ class NGrokManager {
     }
     
     private func attemptLocalNGrokStart() {
+        // Check if static URL is configured
+        guard let _ = staticURL else {
+            lastError = "NGrok static URL not configured. Please configure it in Settings."
+            print("❌ NGrok static URL not configured")
+            return
+        }
+        
         // Check if NGrok is installed
         guard isNGrokInstalled() else {
             lastError = "NGrok is not installed. Please install NGrok: https://ngrok.com/download"
@@ -81,6 +88,20 @@ class NGrokManager {
     }
     
     func getManualStartInstructions() -> String {
+        guard let staticURL = staticURL else {
+            return """
+            Due to app sandbox restrictions, NGrok cannot be started automatically.
+            
+            NGrok static URL not configured. Please configure it in Settings first.
+            
+            Then run this command in Terminal:
+            
+            ngrok http --url=YOUR_CONFIGURED_URL \(localPort)
+            
+            Then click "Check for External Tunnel" to detect your running tunnel.
+            """
+        }
+        
         return """
         Due to app sandbox restrictions, NGrok cannot be started automatically.
         
@@ -169,6 +190,13 @@ class NGrokManager {
             return
         }
         
+        // Get the configured static URL
+        guard let staticURL = staticURL else {
+            self.lastError = "NGrok static URL not configured"
+            print("❌ NGrok static URL not configured")
+            return
+        }
+        
         // Use the static URL if available, otherwise use dynamic
         // If using container path, don't need to export PATH
         let command = if ngrokPath.contains("Application Support") {
@@ -236,14 +264,14 @@ class NGrokManager {
             
             self.isRunning = true
             self.lastError = nil
-            self.tunnelURL = "https://\(self.staticURL)"
+            self.tunnelURL = "https://\(staticURL)"
             print("🚀 Starting NGrok tunnel...")
-            print("🌐 Tunnel URL: https://\(self.staticURL)")
+            print("🌐 Tunnel URL: https://\(staticURL)")
             
         } catch {
-            self.lastError = "App sandbox prevents NGrok execution. Please start NGrok manually: 'ngrok http --url=\(self.staticURL) \(self.localPort)'"
+            self.lastError = "App sandbox prevents NGrok execution. Please start NGrok manually: 'ngrok http --url=\(staticURL) \(self.localPort)'"
             print("❌ Failed to start NGrok due to sandbox restrictions")
-            print("💡 Manual command: ngrok http --url=\(self.staticURL) \(self.localPort)")
+            print("💡 Manual command: ngrok http --url=\(staticURL) \(self.localPort)")
             
             // Check if NGrok is already running externally
             Task {
@@ -358,7 +386,7 @@ class NGrokManager {
             "is_running": isRunning,
             "tunnel_url": tunnelURL ?? "None",
             "last_error": lastError ?? "None",
-            "static_url": staticURL,
+            "static_url": staticURL ?? "Not configured",
             "local_port": localPort,
             "ngrok_installed": isNGrokInstalled(),
             "ngrok_path": findNGrokPath() ?? "Not found"
@@ -433,6 +461,15 @@ class NGrokManager {
     private func checkForExternalTunnel() async {
         print("🔧 Checking for external NGrok tunnel...")
         
+        // Check if static URL is configured
+        guard let staticURL = staticURL else {
+            self.isRunning = false
+            self.tunnelURL = nil
+            self.lastError = "NGrok static URL not configured. Please configure it in Settings."
+            print("🔧 ❌ NGrok static URL not configured")
+            return
+        }
+        
         // Try to connect to the expected tunnel URL
         do {
             let url = URL(string: "https://\(staticURL)")!
@@ -450,10 +487,10 @@ class NGrokManager {
                 
                 if hasNGrokHeaders {
                     self.isRunning = true
-                    self.tunnelURL = "https://\(self.staticURL)"
+                    self.tunnelURL = "https://\(staticURL)"
                     self.lastError = nil
                     print("🔧 ✅ External NGrok tunnel detected and working!")
-                    print("🌐 Tunnel URL: https://\(self.staticURL)")
+                    print("🌐 Tunnel URL: https://\(staticURL)")
                     print("🔧 Response status: \(httpResponse.statusCode)")
                     
                     // Print NGrok-specific headers for debugging
@@ -473,7 +510,7 @@ class NGrokManager {
         // If we get here, NGrok is not running externally
         self.isRunning = false
         self.tunnelURL = nil
-        self.lastError = "NGrok not running. Please start manually: 'ngrok http --url=\(self.staticURL) \(self.localPort)'"
+        self.lastError = "NGrok not running. Please start manually: 'ngrok http --url=\(staticURL) \(self.localPort)'"
         print("🔧 ❌ No external NGrok tunnel found")
     }
     
