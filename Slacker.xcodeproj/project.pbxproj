@@ -60,6 +60,7 @@
 		88DBD8542E1702C8005FC390 /* WebhookTester.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88DBD8532E1702C8005FC390 /* WebhookTester.swift */; };
 		88DBD8562E18AD9E005FC390 /* NGrokManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88DBD8552E18AD9E005FC390 /* NGrokManager.swift */; };
 		88DBD8582E18CA05005FC390 /* SlackOffView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88DBD8572E18CA05005FC390 /* SlackOffView.swift */; };
+		88DBD85B2E18CB02005FC390 /* SlackSassinSetupSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88DBD85A2E18CB02005FC390 /* SlackSassinSetupSheet.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -110,6 +111,7 @@
 		88DBD8532E1702C8005FC390 /* WebhookTester.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebhookTester.swift; sourceTree = "<group>"; };
 		88DBD8552E18AD9E005FC390 /* NGrokManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NGrokManager.swift; sourceTree = "<group>"; };
 		88DBD8572E18CA05005FC390 /* SlackOffView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlackOffView.swift; sourceTree = "<group>"; };
+		88DBD85A2E18CB02005FC390 /* SlackSassinSetupSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlackSassinSetupSheet.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -188,6 +190,7 @@
 				0A4D35982AF5425900846890 /* AppView.swift */,
 				0ADB95E92C5D41B600EB0C60 /* Chats */,
 				0A6E85212C5E98A40030A4AA /* Settings */,
+				88DBD8592E18CB01005FC390 /* Setup */,
 				0ADB95E02C5D33DD00EB0C60 /* Sidebar */,
 			);
 			path = Views;
@@ -321,6 +324,14 @@
 			path = Sheets;
 			sourceTree = "<group>";
 		};
+		88DBD8592E18CB01005FC390 /* Setup */ = {
+			isa = PBXGroup;
+			children = (
+				88DBD85A2E18CB02005FC390 /* SlackSassinSetupSheet.swift */,
+			);
+			path = Setup;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -418,6 +429,7 @@
 				0ADB95ED2C5D42E200EB0C60 /* UserMessageView.swift in Sources */,
 				0ADB95EF2C5D42FF00EB0C60 /* AssistantMessageView.swift in Sources */,
 				88DBD8582E18CA05005FC390 /* SlackOffView.swift in Sources */,
+				88DBD85B2E18CB02005FC390 /* SlackSassinSetupSheet.swift in Sources */,
 				0A6E85302C5EB5F90030A4AA /* UpdateSystemPromptSheet.swift in Sources */,
 				0A6E85152C5E98620030A4AA /* Message.swift in Sources */,
 				0A6E85162C5E98620030A4AA /* Chat.swift in Sources */,

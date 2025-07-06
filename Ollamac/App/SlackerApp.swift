@@ -29,6 +29,9 @@ struct SlackerApp: App {
     // Navigation state for SlackOff vs Chat modes
     @State private var currentView: AppViewMode = .slackOff
     
+    // Setup flow state
+    @State private var showingSetup: Bool = false
+    
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([Chat.self, Message.self, SlackMessage.self])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
@@ -70,6 +73,9 @@ struct SlackerApp: App {
                 .environment(webhookServer)
                 .environment(ngrokManager)
                 .onAppear {
+                    // Check for SlackSassin configuration on startup
+                    checkConfiguration()
+                    
                     // Auto-start the webhook server
                     webhookServer.startServer()
                     
@@ -81,6 +87,20 @@ struct SlackerApp: App {
                     // Print debug info after startup
                     DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
                         print("\n🔧 ===== SLACKSASSIN STARTUP STATUS =====")
+                        
+                        // Configuration status
+                        let isConfigured = SlackerConfig.shared.isConfigured()
+                        if isConfigured {
+                            print("✅ SlackSassin configuration complete!")
+                            if let zapierURL = SlackerConfig.shared.getZapierWebhookURL() {
+                                print("🔗 Zapier webhook configured")
+                            }
+                            if let ngrokURL = SlackerConfig.shared.getNgrokStaticURL() {
+                                print("🌐 NGrok URL configured: \(ngrokURL)")
+                            }
+                        } else {
+                            print("⚠️ SlackSassin configuration incomplete - setup required")
+                        }
                         
                         // Webhook server status
                         if webhookServer.isRunning {
@@ -107,12 +127,18 @@ struct SlackerApp: App {
                             }
                         } else {
                             print("❌ NGrok tunnel not detected")
-                            print("💡 Manual setup: Run 'ngrok http --url=[INSERT YOUR ENDPOINT URL HERE].ngrok-free.app 8080' in Terminal")
-                            print("   Then use Settings → Experimental → Check External to detect it")
+                            if let ngrokURL = SlackerConfig.shared.getNgrokStaticURL() {
+                                print("💡 Manual setup: Run 'ngrok http --url=\(ngrokURL) 8080' in Terminal")
+                            } else {
+                                print("💡 Configure NGrok URL in setup first")
+                            }
                         }
                         
                         print("🏁 SlackSassin startup complete!\n")
                     }
+                }
+                .sheet(isPresented: $showingSetup) {
+                    SlackSassinSetupSheet(isPresented: $showingSetup)
                 }
                 .onDisappear {
                     // Clean shutdown
@@ -151,5 +177,15 @@ struct SlackerApp: App {
             }
         }
         .defaultSize(CGSize(width: 1024, height: 768))
+    }
+    
+    private func checkConfiguration() {
+        let isConfigured = SlackerConfig.shared.isConfigured()
+        let hasNgrokURL = SlackerConfig.shared.getNgrokStaticURL() != nil
+        
+        if !isConfigured || !hasNgrokURL {
+            // Show setup sheet if either Zapier webhook or NGrok URL is missing
+            showingSetup = true
+        }
     }
 }

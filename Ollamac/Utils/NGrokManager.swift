@@ -463,55 +463,66 @@ class NGrokManager {
         
         // Check if static URL is configured
         guard let staticURL = staticURL else {
-            self.isRunning = false
-            self.tunnelURL = nil
-            self.lastError = "NGrok static URL not configured. Please configure it in Settings."
+            await MainActor.run {
+                self.isRunning = false
+                self.tunnelURL = nil
+                self.lastError = "NGrok static URL not configured. Please configure it in Settings."
+            }
             print("🔧 ❌ NGrok static URL not configured")
             return
         }
         
-        // Try to connect to the expected tunnel URL
+        // Try to connect to the health endpoint on the tunnel
         do {
-            let url = URL(string: "https://\(staticURL)")!
-            let request = URLRequest(url: url, timeoutInterval: 10.0)
-            let (_, response) = try await URLSession.shared.data(for: request)
+            let healthURL = URL(string: "https://\(staticURL)/health")!
+            let request = URLRequest(url: healthURL, timeoutInterval: 10.0)
+            let (data, response) = try await URLSession.shared.data(for: request)
             
             if let httpResponse = response as? HTTPURLResponse {
-                // Check for NGrok-specific headers to confirm it's actually NGrok
-                let hasNGrokHeaders = httpResponse.allHeaderFields.keys.contains { key in
-                    if let keyString = key as? String {
-                        return keyString.lowercased().contains("ngrok")
-                    }
-                    return false
-                }
-                
-                if hasNGrokHeaders {
-                    self.isRunning = true
-                    self.tunnelURL = "https://\(staticURL)"
-                    self.lastError = nil
-                    print("🔧 ✅ External NGrok tunnel detected and working!")
-                    print("🌐 Tunnel URL: https://\(staticURL)")
-                    print("🔧 Response status: \(httpResponse.statusCode)")
-                    
-                    // Print NGrok-specific headers for debugging
-                    for (key, value) in httpResponse.allHeaderFields {
-                        if let keyString = key as? String, keyString.lowercased().contains("ngrok") {
-                            print("🔧 NGrok header: \(keyString) = \(value)")
+                if httpResponse.statusCode == 200 {
+                    // Try to parse the health response to confirm it's our webhook server
+                    if let responseString = String(data: data, encoding: .utf8),
+                       responseString.contains("healthy") {
+                        await MainActor.run {
+                            self.isRunning = true
+                            self.tunnelURL = "https://\(staticURL)"
+                            self.lastError = nil
                         }
+                        print("🔧 ✅ External NGrok tunnel detected and webhook server responding!")
+                        print("🌐 Tunnel URL: https://\(staticURL)")
+                        print("🔧 Health endpoint: https://\(staticURL)/health")
+                        print("🔧 Webhook endpoint: https://\(staticURL)/zapier-webhook")
+                        return
+                    } else {
+                        await MainActor.run {
+                            self.isRunning = false
+                            self.lastError = "Tunnel responds but webhook server not detected"
+                        }
+                        print("🔧 ⚠️ Tunnel at https://\(staticURL) responds but webhook server not detected")
+                        print("🔧 Response: \(String(data: data, encoding: .utf8) ?? "No data")")
                     }
-                    return
+                } else {
+                    await MainActor.run {
+                        self.isRunning = false
+                        self.lastError = "Tunnel responded with status \(httpResponse.statusCode)"
+                    }
+                    print("🔧 ⚠️ Tunnel at https://\(staticURL)/health responded with status \(httpResponse.statusCode)")
                 }
             }
         } catch {
             // NGrok might not be running, or network error
-            print("🔧 No external NGrok tunnel detected: \(error.localizedDescription)")
+            await MainActor.run {
+                self.isRunning = false
+                self.tunnelURL = nil
+                self.lastError = "Failed to connect to tunnel: \(error.localizedDescription)"
+            }
+            print("🔧 ❌ Failed to connect to https://\(staticURL)/health: \(error.localizedDescription)")
         }
         
         // If we get here, NGrok is not running externally
-        self.isRunning = false
-        self.tunnelURL = nil
-        self.lastError = "NGrok not running. Please start manually: 'ngrok http --url=\(staticURL) \(self.localPort)'"
-        print("🔧 ❌ No external NGrok tunnel found")
+        if !isRunning {
+            print("🔧 💡 To start NGrok manually: ngrok http --url=\(staticURL) \(self.localPort)")
+        }
     }
     
     // MARK: - Container NGrok Management
