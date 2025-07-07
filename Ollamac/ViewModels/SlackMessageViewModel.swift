@@ -327,6 +327,29 @@ final class SlackMessageViewModel {
         }
     }
     
+    @MainActor
+    func updateAutoResponseTemplate(_ messageId: String, useForAutoResponse: Bool) async {
+        guard let message = allMessages.first(where: { $0.id.uuidString == messageId }) else {
+            print("❌ Message not found for ID: \(messageId)")
+            return
+        }
+        
+        do {
+            message.useForAutoResponse = useForAutoResponse
+            try modelContext.save()
+            loadMessages()
+            
+            if useForAutoResponse {
+                print("✅ Message marked as auto-response template: \(message.text.prefix(50))...")
+            } else {
+                print("🔄 Auto-response template removed for message: \(message.text.prefix(50))...")
+            }
+            
+        } catch {
+            print("❌ Failed to update auto-response template setting: \(error)")
+        }
+    }
+    
     func sendResponseToSlack(messageId: String, response: String) async throws {
         guard let message = allMessages.first(where: { $0.id.uuidString == messageId }) else {
             throw SlackMessageError.messageNotFound

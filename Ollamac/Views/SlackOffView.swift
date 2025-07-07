@@ -604,6 +604,11 @@ struct MessageDetailContent: View {
                                 editedResponse: $editedResponse,
                                 isProcessingResponse: $isProcessingResponse)
                 
+                // Auto-response template option
+                AutoResponseTemplateSection(message: message,
+                                          generatedResponse: generatedResponse,
+                                          editedResponse: editedResponse)
+                
                 Divider()
                 
                 // Action buttons
@@ -737,6 +742,68 @@ struct AIResponseSection: View {
                         .textSelection(.enabled)
                 }
             }
+        }
+    }
+}
+
+struct AutoResponseTemplateSection: View {
+    let message: SlackMessage
+    let generatedResponse: String
+    let editedResponse: String
+    
+    @Environment(SlackMessageViewModel.self) private var slackMessageViewModel
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            // Only show if there's a response to template
+            if !generatedResponse.isEmpty {
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack {
+                        Image(systemName: "repeat.circle")
+                            .foregroundColor(.blue)
+                        Text("Auto-Response Template")
+                            .font(.headline)
+                            .fontWeight(.semibold)
+                    }
+                    
+                    Text("Mark this response as a template for similar questions")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    
+                    Toggle("Use this Response for All Similar Questions", isOn: Binding(
+                        get: { message.useForAutoResponse },
+                        set: { newValue in
+                            updateAutoResponseSetting(newValue)
+                        }
+                    ))
+                    .font(.body)
+                    .help("When enabled, SlackSassin will automatically use this response (or your edited version) for similar questions in the future")
+                    
+                    if message.useForAutoResponse {
+                        HStack {
+                            Image(systemName: "checkmark.circle.fill")
+                                .foregroundColor(.green)
+                            Text("This response will be used as a template for similar questions")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                        .padding(.top, 4)
+                    }
+                }
+                .padding()
+                .background(Color(NSColor.controlBackgroundColor).opacity(0.3))
+                .cornerRadius(8)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(message.useForAutoResponse ? Color.blue : Color.clear, lineWidth: 1)
+                )
+            }
+        }
+    }
+    
+    private func updateAutoResponseSetting(_ newValue: Bool) {
+        Task {
+            await slackMessageViewModel.updateAutoResponseTemplate(message.id.uuidString, useForAutoResponse: newValue)
         }
     }
 }

@@ -25,6 +25,7 @@ final class SlackMessage: Identifiable {
     var status: MessageStatus = MessageStatus.pending
     var aiResponse: String?
     var editedResponse: String?
+    var useForAutoResponse: Bool = false
     var error: String?
     
     // Metadata
