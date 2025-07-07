@@ -1,13 +1,5 @@
 github: ["Kevin-Tucuxi"]
 custom:
   [
-<script async
-  src="https://js.stripe.com/v3/buy-button.js">
-</script>
-
-<stripe-buy-button
-  buy-button-id="buy_btn_1Ri4djRqraj5Af9xTkzRbg1R"
-  publishable-key="pk_live_51Q0bXMRqraj5Af9x4oxCRZmO67FNlEkLuEiYI6qbFFfgAh9aQdZfDuPVrgSuuJVTVtmRHExB2vPKt3KR6UetZ57T002TM77A2a"
->
-</stripe-buy-button>
+"https://buy.stripe.com/bJe28t0JdfX59c04L763K01"
   ]
