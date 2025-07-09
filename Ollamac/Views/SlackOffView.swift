@@ -643,14 +643,24 @@ struct OriginalMessageView: View {
                 StatusIcon(status: message.status)
             }
             
-            // Message metadata
-            HStack {
-                Label(message.userName ?? "Unknown", systemImage: "person.circle")
-                Label("#\(message.channelName ?? "unknown")", systemImage: "number")
-                Label(formatDate(message.receivedAt), systemImage: "clock")
+            // Message metadata and similarity info
+            HStack(alignment: .top) {
+                VStack(alignment: .leading, spacing: 4) {
+                    HStack {
+                        Label(message.userName ?? "Unknown", systemImage: "person.circle")
+                        Label("#\(message.channelName ?? "unknown")", systemImage: "number")
+                        Label(formatDate(message.receivedAt), systemImage: "clock")
+                    }
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                }
+                
+                Spacer()
+                
+                // Similarity information in the designated area
+                SimilarityInfoView(message: message)
+                    .frame(maxWidth: 250)
             }
-            .font(.caption)
-            .foregroundColor(.secondary)
             
             // Message content
             Text(message.text)
@@ -677,6 +687,8 @@ struct AIResponseSection: View {
     @Binding var editedResponse: String
     @Binding var isProcessingResponse: Bool
     
+    @Environment(SlackMessageViewModel.self) private var slackMessageViewModel
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
@@ -696,6 +708,10 @@ struct AIResponseSection: View {
                     }
                 } else if !generatedResponse.isEmpty {
                     Button(isEditing ? "View" : "Edit") {
+                        if isEditing {
+                            // Save edited response when switching from edit to view
+                            saveEditedResponse()
+                        }
                         isEditing.toggle()
                     }
                     .font(.caption)
@@ -742,6 +758,12 @@ struct AIResponseSection: View {
                         .textSelection(.enabled)
                 }
             }
+        }
+    }
+    
+    private func saveEditedResponse() {
+        Task {
+            await slackMessageViewModel.editResponse(message, editedResponse: editedResponse)
         }
     }
 }
@@ -941,122 +963,369 @@ struct SlackOffSettingsView: View {
     @Default(.slackOffTopP) private var slackOffTopP
     @Default(.slackOffTopK) private var slackOffTopK
     @Default(.defaultHost) private var defaultHost
+    @Default(.similarityDisplayThreshold) private var similarityDisplayThreshold
+    @Default(.similarityAutoResponseThreshold) private var similarityAutoResponseThreshold
+    @Default(.similarityEmbeddingModel) private var similarityEmbeddingModel
     
     @State private var availableModels: [String] = []
     @State private var isLoadingModels = false
     
     var body: some View {
         NavigationView {
-            Form {
-                Section("AI Model Configuration") {
-                    HStack {
-                        Text("SlackOff Model")
-                        Spacer()
-                        if isLoadingModels {
-                            ProgressView()
-                                .scaleEffect(0.8)
-                        } else {
-                            Picker("Model", selection: $slackOffModel) {
-                                ForEach(availableModels, id: \.self) { model in
-                                    Text(model).tag(model)
-                                }
+            ScrollView {
+                LazyVStack(spacing: 20) {
+                // AI Model Configuration Section
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("AI Model Configuration")
+                        .font(.title2)
+                        .fontWeight(.bold)
+                    
+                    VStack(spacing: 16) {
+                        // AI Response Model
+                        VStack(alignment: .leading, spacing: 8) {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("AI Response Model")
+                                    .font(.headline)
+                                Text("Primary model used to generate SlackOff responses")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
                             }
-                            .pickerStyle(.menu)
-                            .frame(minWidth: 200)
+                            
+                            HStack {
+                                if isLoadingModels {
+                                    ProgressView()
+                                        .scaleEffect(0.8)
+                                    Text("Loading models...")
+                                        .foregroundColor(.secondary)
+                                } else {
+                                    Picker("Response Model", selection: $slackOffModel) {
+                                        ForEach(availableModels, id: \.self) { model in
+                                            Text(model).tag(model)
+                                        }
+                                    }
+                                    .pickerStyle(.menu)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                }
+                                
+                                Spacer()
+                                
+                                Button("Refresh") {
+                                    Task { await loadModels() }
+                                }
+                                .buttonStyle(.borderless)
+                                .foregroundColor(.blue)
+                            }
+                        }
+                        
+                        // Current Selection Display
+                        if !slackOffModel.isEmpty && !isLoadingModels {
+                            HStack {
+                                Image(systemName: "checkmark.circle.fill")
+                                    .foregroundColor(.green)
+                                Text("Currently using: \(slackOffModel)")
+                                    .font(.subheadline)
+                                    .foregroundColor(.secondary)
+                                Spacer()
+                            }
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 8)
+                            .background(Color.green.opacity(0.1))
+                            .cornerRadius(8)
                         }
                     }
+                    .padding(.vertical, 8)
                     
-                    Button("Refresh Models") {
-                        Task { await loadModels() }
-                    }
-                    .buttonStyle(.borderless)
+                    Text("Select the AI model for generating responses. Larger models may provide better quality but slower responses.")
+                        .font(.footnote)
+                        .foregroundColor(.secondary)
                 }
+                .padding()
+                .background(Color(.controlBackgroundColor))
+                .cornerRadius(10)
                 
-                Section("System Prompt") {
+                // Response Behavior Section
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("Response Behavior")
+                        .font(.title2)
+                        .fontWeight(.bold)
+                    
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("SlackOff System Prompt")
-                            .font(.headline)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("System Prompt")
+                                .font(.headline)
+                            Text("Instructions that guide how the AI responds to Slack messages")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
                         
                         TextEditor(text: $slackOffSystemPrompt)
                             .font(.system(.body, design: .monospaced))
                             .frame(minHeight: 100)
-                            .border(Color.gray.opacity(0.3))
-                        
-                        Text("This prompt will be used for all SlackOff responses.")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
+                            .padding(8)
+                            .background(Color(.textBackgroundColor))
+                            .cornerRadius(8)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 8)
+                                    .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+                            )
                     }
-                }
-                
-                Section("Response Settings") {
-                    Toggle("Auto-generate responses", isOn: $slackOffAutoResponse)
-                        .help("Automatically generate AI responses when Slack messages are received")
+                    .padding(.vertical, 8)
                     
-                    if slackOffAutoResponse {
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("When enabled, SlackSassin will automatically generate AI responses for incoming Slack messages using the selected model and system prompt.")
+                    Text("This prompt defines the AI's personality and response style for all SlackOff interactions.")
+                        .font(.footnote)
+                        .foregroundColor(.secondary)
+                }
+                .padding()
+                .background(Color(.controlBackgroundColor))
+                .cornerRadius(10)
+                
+                // Automation Section
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("Automation")
+                        .font(.title2)
+                        .fontWeight(.bold)
+                    
+                    VStack(alignment: .leading, spacing: 8) {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Auto-Response Settings")
+                                .font(.headline)
+                            Text("Control automatic response generation")
                                 .font(.caption)
                                 .foregroundColor(.secondary)
-                                .padding(.top, 4)
+                        }
+                        
+                        Toggle("Auto-generate responses", isOn: $slackOffAutoResponse)
+                            .help("Automatically generate AI responses when Slack messages are received")
+                        
+                        if slackOffAutoResponse {
+                            HStack {
+                                Image(systemName: "checkmark.circle.fill")
+                                    .foregroundColor(.green)
+                                Text("SlackSassin will automatically generate responses for incoming Slack messages")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 8)
+                            .background(Color.green.opacity(0.1))
+                            .cornerRadius(8)
                         }
                     }
-                }
-                
-                Section("Generation Parameters") {
-                    VStack(alignment: .leading, spacing: 12) {
-                        HStack {
-                            Text("Temperature")
-                            Spacer()
-                            Text(String(format: "%.1f", slackOffTemperature))
-                                .foregroundColor(.secondary)
-                        }
-                        Slider(value: $slackOffTemperature, in: 0...1, step: 0.1)
-                        Text("Controls randomness. Higher values increase creativity, lower values are more focused.")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
+                    .padding(.vertical, 8)
                     
-                    VStack(alignment: .leading, spacing: 12) {
-                        HStack {
-                            Text("Top P")
-                            Spacer()
-                            Text(String(format: "%.1f", slackOffTopP))
-                                .foregroundColor(.secondary)
-                        }
-                        Slider(value: $slackOffTopP, in: 0...1, step: 0.1)
-                        Text("Affects diversity. Higher values increase variety, lower values are more conservative.")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
-                    
-                    VStack(alignment: .leading, spacing: 12) {
-                        HStack {
-                            Text("Top K")
-                            Spacer()
-                            Text("\(slackOffTopK)")
-                                .foregroundColor(.secondary)
-                        }
-                        Slider(value: Binding(
-                            get: { Double(slackOffTopK) },
-                            set: { slackOffTopK = Int($0) }
-                        ), in: 1...100, step: 1)
-                        Text("Limits token pool. Higher values increase variety, lower values are more conservative.")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
-                }
-                
-                Section("Connection") {
-                    HStack {
-                        Text("Ollama Host")
-                        Spacer()
-                        Text(defaultHost)
-                            .foregroundColor(.secondary)
-                    }
-                    
-                    Text("SlackOff uses the same Ollama connection as the chat interface.")
-                        .font(.caption)
+                    Text("When enabled, the AI will automatically process incoming Slack messages using the configured model and system prompt.")
+                        .font(.footnote)
                         .foregroundColor(.secondary)
+                }
+                .padding()
+                .background(Color(.controlBackgroundColor))
+                .cornerRadius(10)
+                
+                // Generation Parameters Section
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("Generation Parameters")
+                        .font(.title2)
+                        .fontWeight(.bold)
+                    
+                    VStack(spacing: 20) {
+                        // Temperature
+                        VStack(alignment: .leading, spacing: 8) {
+                            HStack {
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text("Temperature")
+                                        .font(.headline)
+                                    Text("Controls response creativity vs. focus")
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                }
+                                Spacer()
+                                Text(String(format: "%.1f", slackOffTemperature))
+                                    .font(.title2)
+                                    .fontWeight(.semibold)
+                                    .foregroundColor(.orange)
+                            }
+                            Slider(value: $slackOffTemperature, in: 0...1, step: 0.1)
+                                .accentColor(.orange)
+                        }
+                        
+                        Divider()
+                        
+                        // Top P
+                        VStack(alignment: .leading, spacing: 8) {
+                            HStack {
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text("Top P")
+                                        .font(.headline)
+                                    Text("Controls response diversity")
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                }
+                                Spacer()
+                                Text(String(format: "%.1f", slackOffTopP))
+                                    .font(.title2)
+                                    .fontWeight(.semibold)
+                                    .foregroundColor(.purple)
+                            }
+                            Slider(value: $slackOffTopP, in: 0...1, step: 0.1)
+                                .accentColor(.purple)
+                        }
+                        
+                        Divider()
+                        
+                        // Top K
+                        VStack(alignment: .leading, spacing: 8) {
+                            HStack {
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text("Top K")
+                                        .font(.headline)
+                                    Text("Limits vocabulary selection")
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                }
+                                Spacer()
+                                Text("\(slackOffTopK)")
+                                    .font(.title2)
+                                    .fontWeight(.semibold)
+                                    .foregroundColor(.teal)
+                            }
+                            Slider(value: Binding(
+                                get: { Double(slackOffTopK) },
+                                set: { slackOffTopK = Int($0) }
+                            ), in: 1...100, step: 5)
+                                .accentColor(.teal)
+                        }
+                    }
+                    .padding(.vertical, 8)
+                    
+                    Text("Fine-tune response characteristics. Higher values = more creative/varied responses. Lower values = more focused/consistent responses.")
+                        .font(.footnote)
+                        .foregroundColor(.secondary)
+                }
+                .padding()
+                .background(Color(.controlBackgroundColor))
+                .cornerRadius(10)
+                
+                // Similarity Detection Section
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("Similarity Detection")
+                        .font(.title2)
+                        .fontWeight(.bold)
+                    
+                    VStack(spacing: 20) {
+                        // Display Threshold
+                        VStack(alignment: .leading, spacing: 8) {
+                            HStack {
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text("Display Threshold")
+                                        .font(.headline)
+                                    Text("Show similarity info when confidence exceeds this level")
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                }
+                                Spacer()
+                                Text("\(Int(similarityDisplayThreshold))%")
+                                    .font(.title2)
+                                    .fontWeight(.semibold)
+                                    .foregroundColor(.blue)
+                            }
+                            Slider(value: $similarityDisplayThreshold, in: 0...100, step: 5)
+                                .accentColor(.blue)
+                        }
+                        
+                        Divider()
+                        
+                        // Auto-Response Threshold
+                        VStack(alignment: .leading, spacing: 8) {
+                            HStack {
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text("Auto-Response Threshold")
+                                        .font(.headline)
+                                    Text("Automatically send template responses at this confidence level")
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                }
+                                Spacer()
+                                Text("\(Int(similarityAutoResponseThreshold))%")
+                                    .font(.title2)
+                                    .fontWeight(.semibold)
+                                    .foregroundColor(.green)
+                            }
+                            Slider(value: $similarityAutoResponseThreshold, in: 50...100, step: 5)
+                                .accentColor(.green)
+                        }
+                        
+                        Divider()
+                        
+                        // Embedding Model Selection
+                        VStack(alignment: .leading, spacing: 8) {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Embedding Model")
+                                    .font(.headline)
+                                Text("Model used for similarity calculations")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                            
+                            Picker("Embedding Model", selection: $similarityEmbeddingModel) {
+                                Text("nomic-embed-text:v1.5").tag("nomic-embed-text:v1.5")
+                                Text("all-minilm:22m").tag("all-minilm:22m")
+                                Text("text-embedding-ada-002").tag("text-embedding-ada-002")
+                            }
+                            .pickerStyle(.menu)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        }
+                    }
+                    .padding(.vertical, 8)
+                    
+                    Text("Configure when similar questions are detected and auto-responses are triggered. Higher thresholds = more selective matching.")
+                        .font(.footnote)
+                        .foregroundColor(.secondary)
+                }
+                .padding()
+                .background(Color(.controlBackgroundColor))
+                .cornerRadius(10)
+                
+                // Connection Section
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("Connection")
+                        .font(.title2)
+                        .fontWeight(.bold)
+                    
+                    VStack(alignment: .leading, spacing: 8) {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Ollama Connection")
+                                .font(.headline)
+                            Text("Server endpoint for AI model communication")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                        
+                        HStack {
+                            Image(systemName: "server.rack")
+                                .foregroundColor(.blue)
+                            Text(defaultHost)
+                                .font(.system(.body, design: .monospaced))
+                                .foregroundColor(.primary)
+                            Spacer()
+                            Image(systemName: "checkmark.circle.fill")
+                                .foregroundColor(.green)
+                        }
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
+                        .background(Color.blue.opacity(0.1))
+                        .cornerRadius(8)
+                    }
+                    .padding(.vertical, 8)
+                    
+                    Text("SlackOff uses the same Ollama connection as the chat interface. Configure this in the main app settings if needed.")
+                        .font(.footnote)
+                        .foregroundColor(.secondary)
+                }
+                .padding()
+                .background(Color(.controlBackgroundColor))
+                .cornerRadius(10)
+                .padding(.horizontal, 20)
+                .padding(.vertical, 10)
                 }
             }
             .navigationTitle("SlackOff Settings")
@@ -1068,7 +1337,7 @@ struct SlackOffSettingsView: View {
                 }
             }
         }
-        .frame(width: 600, height: 700)
+        .frame(width: 750, height: 900)
         .onAppear {
             Task { await loadModels() }
         }

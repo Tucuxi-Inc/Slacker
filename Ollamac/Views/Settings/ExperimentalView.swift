@@ -10,6 +10,9 @@ import SwiftUI
 
 struct ExperimentalView: View {
     @Default(.experimentalCodeHighlighting) private var experimentalCodeHighlighting
+    @Default(.similarityDisplayThreshold) private var similarityDisplayThreshold
+    @Default(.similarityAutoResponseThreshold) private var similarityAutoResponseThreshold
+    @Default(.similarityEmbeddingModel) private var similarityEmbeddingModel
     @Environment(NGrokManager.self) private var ngrokManager
     
     var body: some View {
@@ -29,6 +32,54 @@ struct ExperimentalView: View {
                 }
             } footer: {
                 SectionFooter("Enabling this might affect generation and scrolling performance.")
+            }
+            
+            Section {
+                Box {
+                    VStack(spacing: 12) {
+                        HStack {
+                            Text("Display Threshold")
+                                .fontWeight(.semibold)
+                            Spacer()
+                            Text("\(Int(similarityDisplayThreshold))%")
+                                .foregroundColor(.secondary)
+                                .monospacedDigit()
+                        }
+                        
+                        Slider(value: $similarityDisplayThreshold, in: 0...100, step: 5)
+                        
+                        Divider()
+                        
+                        HStack {
+                            Text("Auto-Response Threshold")
+                                .fontWeight(.semibold)
+                            Spacer()
+                            Text("\(Int(similarityAutoResponseThreshold))%")
+                                .foregroundColor(.secondary)
+                                .monospacedDigit()
+                        }
+                        
+                        Slider(value: $similarityAutoResponseThreshold, in: 0...100, step: 5)
+                        
+                        Divider()
+                        
+                        HStack {
+                            Text("Embedding Model")
+                                .fontWeight(.semibold)
+                            Spacer()
+                            Picker("", selection: $similarityEmbeddingModel) {
+                                Text("nomic-embed-text:v1.5").tag("nomic-embed-text:v1.5")
+                                Text("all-minilm:22m").tag("all-minilm:22m")
+                                Text("text-based (current)").tag("text-based")
+                            }
+                            .pickerStyle(.menu)
+                        }
+                    }
+                }
+            } header: {
+                Text("Similarity Detection")
+            } footer: {
+                SectionFooter("Configure thresholds for displaying and auto-responding to similar messages. Display threshold determines when similarity info appears in UI. Auto-response threshold determines when automatic responses are sent.")
             }
             
             Section {

@@ -53,6 +53,8 @@
 		0AFC5AA92C66A20C00A148A2 /* CodeBlockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFC5AA82C66A20C00A148A2 /* CodeBlockView.swift */; };
 		175D318C2C64ADF9009B58E0 /* DefaultFontSizeField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 175D318B2C64ADF9009B58E0 /* DefaultFontSizeField.swift */; };
 		4A4A8EBE2D5047590065A5EC /* String+ReplaceAndTrim.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A4A8EBD2D5047590065A5EC /* String+ReplaceAndTrim.swift */; };
+		8809989E2E1DBCCA000DE953 /* SimilarityService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8809989D2E1DBCCA000DE953 /* SimilarityService.swift */; };
+		880998A02E1DBE33000DE953 /* SimilarityInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8809989F2E1DBE33000DE953 /* SimilarityInfoView.swift */; };
 		88DBD84C2E16F212005FC390 /* SlackMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88DBD84B2E16F212005FC390 /* SlackMessage.swift */; };
 		88DBD84E2E16F234005FC390 /* SlackerWebhookServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88DBD84D2E16F234005FC390 /* SlackerWebhookServer.swift */; };
 		88DBD84F2E16F235005FC390 /* SlackerConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88DBD8512E16F235005FC390 /* SlackerConfig.swift */; };
@@ -104,10 +106,12 @@
 		0AFC5AA82C66A20C00A148A2 /* CodeBlockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodeBlockView.swift; sourceTree = "<group>"; };
 		175D318B2C64ADF9009B58E0 /* DefaultFontSizeField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultFontSizeField.swift; sourceTree = "<group>"; };
 		4A4A8EBD2D5047590065A5EC /* String+ReplaceAndTrim.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+ReplaceAndTrim.swift"; sourceTree = "<group>"; };
+		8809989D2E1DBCCA000DE953 /* SimilarityService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimilarityService.swift; sourceTree = "<group>"; };
+		8809989F2E1DBE33000DE953 /* SimilarityInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimilarityInfoView.swift; sourceTree = "<group>"; };
 		88DBD84B2E16F212005FC390 /* SlackMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlackMessage.swift; sourceTree = "<group>"; };
 		88DBD84D2E16F234005FC390 /* SlackerWebhookServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlackerWebhookServer.swift; sourceTree = "<group>"; };
-		88DBD8512E16F235005FC390 /* SlackerConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlackerConfig.swift; sourceTree = "<group>"; };
 		88DBD84F2E16F243005FC390 /* SlackMessageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlackMessageViewModel.swift; sourceTree = "<group>"; };
+		88DBD8512E16F235005FC390 /* SlackerConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlackerConfig.swift; sourceTree = "<group>"; };
 		88DBD8532E1702C8005FC390 /* WebhookTester.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebhookTester.swift; sourceTree = "<group>"; };
 		88DBD8552E18AD9E005FC390 /* NGrokManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NGrokManager.swift; sourceTree = "<group>"; };
 		88DBD8572E18CA05005FC390 /* SlackOffView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlackOffView.swift; sourceTree = "<group>"; };
@@ -186,6 +190,7 @@
 		0A4D35962AF5422A00846890 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				8809989F2E1DBE33000DE953 /* SimilarityInfoView.swift */,
 				88DBD8572E18CA05005FC390 /* SlackOffView.swift */,
 				0A4D35982AF5425900846890 /* AppView.swift */,
 				0ADB95E92C5D41B600EB0C60 /* Chats */,
@@ -269,6 +274,7 @@
 		0AA41A1D2AF666670053B8DB /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				8809989D2E1DBCCA000DE953 /* SimilarityService.swift */,
 				88DBD8552E18AD9E005FC390 /* NGrokManager.swift */,
 				88DBD8532E1702C8005FC390 /* WebhookTester.swift */,
 				88DBD8512E16F235005FC390 /* SlackerConfig.swift */,
@@ -438,6 +444,7 @@
 				88DBD8562E18AD9E005FC390 /* NGrokManager.swift in Sources */,
 				0A6E852B2C5E9A250030A4AA /* ChatPreferencesView.swift in Sources */,
 				0A6E851D2C5E98770030A4AA /* String+RemoveTrailingSlash.swift in Sources */,
+				8809989E2E1DBCCA000DE953 /* SimilarityService.swift in Sources */,
 				0A6E851E2C5E98770030A4AA /* String+IsValidURL.swift in Sources */,
 				0A6E851F2C5E98770030A4AA /* Defaults+Keys.swift in Sources */,
 				0AFC5AA72C6695CF00A148A2 /* Box.swift in Sources */,
@@ -447,6 +454,7 @@
 				88DBD84C2E16F212005FC390 /* SlackMessage.swift in Sources */,
 				0AF5662E2C6431FB00D6E01A /* CircleButton.swift in Sources */,
 				0ADB96132C5D5CC400EB0C60 /* CodeHighlighter.swift in Sources */,
+				880998A02E1DBE33000DE953 /* SimilarityInfoView.swift in Sources */,
 				0AF5664C2C65A2B400D6E01A /* SectionFooter.swift in Sources */,
 				0ADB96112C5D585500EB0C60 /* Theme+Slacker.swift in Sources */,
 				0AFC5AA92C66A20C00A148A2 /* CodeBlockView.swift in Sources */,

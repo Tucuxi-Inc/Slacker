@@ -27,6 +27,10 @@ final class SlackMessageViewModel {
     var processingCount: Int = 0
     var completedCount: Int = 0
     
+    // Similarity Detection
+    var similarMessages: [String: [SimilarMessageResult]] = [:]
+    var autoResponseMessages: [String: SimilarMessageResult] = [:]
+    
     init(modelContext: ModelContext) {
         self.modelContext = modelContext
         loadMessages()
@@ -124,10 +128,14 @@ final class SlackMessageViewModel {
         }
     }
     
-    func editResponse(_ message: SlackMessage, editedResponse: String) {
+    @MainActor
+    func editResponse(_ message: SlackMessage, editedResponse: String) async {
         do {
             message.editedResponse = editedResponse
             try modelContext.save()
+            loadMessages()
+            
+            print("✅ Edited response saved for message: \(message.text.prefix(50))...")
             
         } catch {
             print("❌ Failed to edit response: \(error)")
@@ -216,11 +224,14 @@ final class SlackMessageViewModel {
         ) { [weak self] notification in
             self?.loadMessages()
             
-            // Auto-generate response if enabled
-            if Defaults[.slackOffAutoResponse] {
-                if let message = notification.object as? SlackMessage {
-                    print("🤖 Auto-generating response for message: \(message.text)")
-                    Task {
+            if let message = notification.object as? SlackMessage {
+                Task {
+                    // Check for similar messages first
+                    await self?.checkForSimilarMessages(message)
+                    
+                    // Only auto-generate if no auto-response was sent
+                    if Defaults[.slackOffAutoResponse] && message.status != .sent {
+                        print("🤖 Auto-generating response for message: \(message.text)")
                         await self?.autoGenerateResponse(for: message)
                     }
                 }
@@ -336,6 +347,13 @@ final class SlackMessageViewModel {
         
         do {
             message.useForAutoResponse = useForAutoResponse
+            
+            // Generate embedding when marking as auto-response template
+            if useForAutoResponse && message.embedding == nil {
+                SimilarityService.shared.generateEmbeddingForMessage(message)
+                print("🧠 Generated embedding for auto-response template")
+            }
+            
             try modelContext.save()
             loadMessages()
             
@@ -348,6 +366,132 @@ final class SlackMessageViewModel {
         } catch {
             print("❌ Failed to update auto-response template setting: \(error)")
         }
+    }
+    
+    // MARK: - Similarity Detection
+    
+    @MainActor
+    func checkForSimilarMessages(_ message: SlackMessage) async {
+        print("🔍 Checking for similar messages for: \(message.text.prefix(50))...")
+        
+        let _ = Defaults[.similarityDisplayThreshold]
+        let _ = Defaults[.similarityAutoResponseThreshold]
+        
+        // Get all auto-response template messages (with embeddings)
+        let templateMessages = allMessages.filter { 
+            $0.useForAutoResponse && $0.embedding != nil 
+        }
+        
+        guard !templateMessages.isEmpty else {
+            print("📊 No auto-response templates available for comparison")
+            return
+        }
+        
+        // Find similar messages for display
+        let similarResults = SimilarityService.shared.findSimilarMessages(
+            to: message,
+            in: modelContext
+        )
+        
+        // Store similar messages for UI display
+        if !similarResults.isEmpty {
+            similarMessages[message.id.uuidString] = similarResults
+            print("📈 Found \(similarResults.count) similar messages for display")
+        }
+        
+        // Check for auto-response candidate
+        let autoResponseCandidates = SimilarityService.shared.getAutoResponseCandidates(
+            for: message,
+            in: modelContext
+        )
+        let autoResponseCandidate = autoResponseCandidates.first
+        
+        if let candidate = autoResponseCandidate {
+            // Convert SlackMessage to SimilarMessageResult for consistency
+            let result = SimilarMessageResult(
+                message: candidate,
+                confidence: 100.0, // Auto-response candidates are high confidence
+                confidenceLevel: .veryHigh
+            )
+            autoResponseMessages[message.id.uuidString] = result
+            print("🎯 Auto-response candidate found with \(result.formattedConfidence) confidence")
+            
+            // Auto-respond if confidence is high enough
+            await processAutoResponse(for: message, using: result)
+        }
+    }
+    
+    @MainActor
+    private func processAutoResponse(for message: SlackMessage, using candidate: SimilarMessageResult) async {
+        print("🤖 Processing auto-response for message: \(message.id)")
+        
+        do {
+            // Get the response from the similar message - prefer edited response
+            let responseText = candidate.message.editedResponse ?? candidate.message.aiResponse ?? ""
+            
+            print("🔍 Template message response selection:")
+            print("   Has edited response: \(candidate.message.editedResponse != nil)")
+            print("   Has AI response: \(candidate.message.aiResponse != nil)")
+            print("   Using response: \(responseText.isEmpty ? "NONE" : responseText.prefix(100))...")
+            
+            guard !responseText.isEmpty else {
+                print("❌ No response text available in template message")
+                return
+            }
+            
+            // Send auto-response to Slack
+            try await sendResponseToSlack(messageId: message.id.uuidString, response: responseText)
+            
+            // Update message with auto-response info
+            message.aiResponse = responseText
+            message.status = .sent
+            message.processedAt = Date()
+            
+            // Add metadata about the auto-response
+            message.error = "Auto-responded using template from similar message (confidence: \(candidate.formattedConfidence))"
+            
+            try modelContext.save()
+            loadMessages()
+            
+            print("✅ Auto-response sent successfully with \(candidate.formattedConfidence) confidence")
+            
+        } catch {
+            print("❌ Failed to process auto-response: \(error)")
+            
+            // Mark message as failed with error info
+            message.status = .failed
+            message.error = "Auto-response failed: \(error.localizedDescription)"
+            
+            do {
+                try modelContext.save()
+                loadMessages()
+            } catch {
+                print("❌ Failed to save error state: \(error)")
+            }
+        }
+    }
+    
+    /// Get similar messages for a specific message ID
+    func getSimilarMessages(for messageId: String) -> [SimilarMessageResult] {
+        return similarMessages[messageId] ?? []
+    }
+    
+    /// Get auto-response candidate for a specific message ID
+    func getAutoResponseCandidate(for messageId: String) -> SimilarMessageResult? {
+        return autoResponseMessages[messageId]
+    }
+    
+    /// Mark a similar message as "not similar" (user feedback)
+    @MainActor
+    func markAsNotSimilar(messageId: String, similarMessageId: UUID) async {
+        // Remove from similar messages
+        if var results = similarMessages[messageId] {
+            results.removeAll { $0.message.id == similarMessageId }
+            similarMessages[messageId] = results.isEmpty ? nil : results
+        }
+        
+        // TODO: Store user feedback for improving similarity detection
+        print("👤 User marked message as not similar: \(similarMessageId)")
     }
     
     func sendResponseToSlack(messageId: String, response: String) async throws {

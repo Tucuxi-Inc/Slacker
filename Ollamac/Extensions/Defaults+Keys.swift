@@ -37,4 +37,9 @@ extension Defaults.Keys {
     
     // Security: Mark sensitive configuration
     static let zapierWebhookURLConfigured = Key<Bool>("zapierWebhookURLConfigured", default: false)
+    
+    // MARK: - Similarity Detection Settings
+    static let similarityDisplayThreshold = Key<Double>("similarityDisplayThreshold", default: 50.0)
+    static let similarityAutoResponseThreshold = Key<Double>("similarityAutoResponseThreshold", default: 90.0)
+    static let similarityEmbeddingModel = Key<String>("similarityEmbeddingModel", default: "nomic-embed-text:v1.5")
 }

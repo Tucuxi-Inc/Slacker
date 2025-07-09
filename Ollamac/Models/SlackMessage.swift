@@ -28,6 +28,11 @@ final class SlackMessage: Identifiable {
     var useForAutoResponse: Bool = false
     var error: String?
     
+    // Similarity/Embedding Data
+    var embedding: [Double]?
+    var embeddingModel: String?
+    var embeddingGeneratedAt: Date?
+    
     // Metadata
     private var matchedKeywordsString: String = ""
     var messageType: MessageType = MessageType.mention
